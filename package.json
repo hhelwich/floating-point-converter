@@ -1,0 +1,22 @@
+{
+  "name": "floating-point-converter",
+  "version": "0.0.0",
+  "description": "Simple IEEE floating point converter website",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@bitbucket.org/hhelwich/floating-point-converter.git"
+  },
+  "keywords": [
+    "IEEE",
+    "floating",
+    "point",
+    "converter",
+    "javascript"
+  ],
+  "author": "Hendrik Helwich",
+  "license": "MIT",
+  "homepage": "https://bitbucket.org/hhelwich/floating-point-converter"
+}
