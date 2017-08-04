@@ -2,13 +2,10 @@
 <html lang="en">
   <head>
     <title>IEEE Floating Point Converter</title>
-    <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
-    <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
-    <link rel="stylesheet" href="floating-point.css">
+    <link rel="stylesheet" href="style.css">
   </head>
   <body>
     <div class="converter card">
@@ -17,25 +14,25 @@
           <div>
             <input id="float" class="number"></input>
           </div>
-          <div id="bits">
+          <div>
             <div class="foo">
               <span class="sign"></span>
               <span class="exponent"></span>
               <span class="mantissa"></span>
             </div>
             <div>
-              <input class="number"></input>
+              <input id="bits" class="number"></input>
             </div>
           </div>
 
           <fieldset>
             <div>
               <label>
-                <input type="radio" name="fBits" id="f32" value="f32">
+                <input type="radio" name="fBits">
                 32-bit
               </label>
               <label>
-                <input type="radio" name="fBits" id="f64" value="f64">
+                <input type="radio" name="fBits">
                 64-bit
               </label>
             </div>
@@ -50,17 +47,9 @@
       </div>
     </div>
 
-    <div id="numberList">
+    <div id="number-list">
     </div>
 
-
-
-    <!-- jQuery first, then Tether, then Bootstrap JS. -->
-    <script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n" crossorigin="anonymous"></script>
-    <!--
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
-    -->
-    <script src="floating-point.js"></script>
+    <script src="bundle.js"></script>
   </body>
 </html>
