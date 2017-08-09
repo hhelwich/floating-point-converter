@@ -41,7 +41,7 @@ describe('toBytes', () => {
 
 describe('fromBytes', () => {
 
-  const fromHex = hex => hex.match(/.{1,2}/g).map(hb => parseInt(hb, 16));
+  const fromHex = hex => (hex.match(/.{1,2}/g)||[]).map(hb => parseInt(hb, 16));
   const fromBytes64 = hex => fromBytes(true)(fromHex(hex));
   const fromBytes32 = hex => fromBytes(false)(fromHex(hex));
 
@@ -79,6 +79,10 @@ describe('fromBytes', () => {
 });
 
 describe('fromBitsStr', () => {
+
+  it('parses empty string', () => {
+    expect(fromBitsStr('')).toEqual([]);
+  });
 
   it('gets bytes from bits string', () => {
     expect(fromBitsStr('00000000')).toEqual([0]);

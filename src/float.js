@@ -16,7 +16,7 @@ export const fromBytes = f64 => bytes => {
 };
 
 // Get a byte list from a bit string
-export const fromBitsStr = bitsStr => bitsStr.match(/.{1,8}/g).map(byteStr => parseInt(byteStr, 2));
+export const fromBitsStr = bitsStr => (bitsStr.match(/.{1,8}/g)||[]).map(byteStr => parseInt(byteStr, 2));
 
 // Get a bit string from a byte list
 export const toBitsStr = bytes => bytes.map(toByteStr).join('');
