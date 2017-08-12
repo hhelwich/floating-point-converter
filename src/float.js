@@ -34,3 +34,29 @@ export const toFloatStr = float => {
   }
   return String(float);
 };
+
+const inc = (bytes, i = bytes.length - 1) => {
+  if (i >= 0 && ++bytes[i] > 255) {
+    bytes[i] = 0;
+    inc(bytes, i - 1);
+  }
+};
+
+export const nextFloat = f64 => float => {
+  const bytes = toBytes(f64)(float);
+  inc(bytes);
+  return fromBytes(f64)(bytes);
+};
+
+const dec = (bytes, i = bytes.length - 1) => {
+  if (i >= 0 && --bytes[i] < 0) {
+    bytes[i] = 255;
+    dec(bytes, i - 1);
+  }
+};
+
+export const prevFloat = f64 => float => {
+  const bytes = toBytes(f64)(float);
+  dec(bytes);
+  return fromBytes(f64)(bytes);
+};
