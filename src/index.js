@@ -1,4 +1,5 @@
-import { littleEndian, toBitsStr, toBytes, fromBytes, fromBitsStr, roundFloat32, toFloatStr } from './float';
+import { littleEndian, toBitsStr, fromNumber, toNumber, fromBitsStr, toFloatStr, fromFloatStr,
+  nextFloat, prevFloat } from './float';
 
 const $bits = document.getElementById('bits');
 const $float = document.getElementById('float');
@@ -7,21 +8,24 @@ const $byteOrder = document.getElementById('byte-order');
 const $bitCount = document.querySelectorAll('input[type=radio]'); // Assume 32-bit radio comes first
 
 let f64 = true;
-let float = Math.PI;
+let f64Str = toFloatStr(true)(fromNumber(true)(Math.PI));
 
-// Round to number to current
-const round = n => f64 ? n : roundFloat32(n);
+const bytes = () => fromFloatStr(f64)(f64Str);
 
 const showFloat = () => {
-  $float.value = toFloatStr(round(float));
-}
+  $float.value = toFloatStr(f64)(bytes());
+};
 
 const showBits = () => {
-  $bits.value = toBitsStr(toBytes(f64)(float));
-}
+  $bits.value = toBitsStr(bytes());
+};
 
 const changeBits = bitsStr => {
-  float = fromBytes(f64)(fromBitsStr(bitsStr));
+  if (bitsStr.length !== (f64 ? 8 : 4) * 8) {
+    // Assure correct length and fill with trailing zeros if neccesary
+    bitsStr = bitsStr.concat(Array(65).join('0')).slice(0, (f64 ? 8 : 4) * 8);
+  }
+  f64Str = toFloatStr(f64)(fromBitsStr(bitsStr));
   showFloat();
 };
 
@@ -33,6 +37,31 @@ showFloat();
 showBits();
 //showBitsInfo();
 
+
+const createNumberElement = (floatStr, selected) => {
+  const div = document.createElement('div');
+  div.innerHTML = `<div class="card text-center ${selected?' card-primary' : ''}"><div class="card-block" >${
+    floatStr}</div></div>`;
+  return div.childNodes[0];
+};
+
+(() => {
+  let docHeight = document.body.clientHeight;
+  let winHeight = window.innerHeight;
+  //$numberList.append('<div class="card text-center card-primary"><div class="card-block" >' + float + '</div></div>');
+  const bs = bytes();
+  $numberList.appendChild(createNumberElement(toFloatStr(f64)(bs), true));
+  let nbs = bs, pbs = bs;
+  while (docHeight < winHeight * 3) {
+    nbs = nextFloat(nbs);
+    $numberList.prepend(createNumberElement(toFloatStr(f64)(nbs)));
+    pbs = prevFloat(pbs);
+    $numberList.appendChild(createNumberElement(toFloatStr(f64)(pbs)));
+    docHeight = document.body.clientHeight;
+  }
+  //$window.scrollTop(($document.height() - winHeight) / 2);
+})();
+
 // Foo
 const setF64 = v => {
   f64 = v;
@@ -41,21 +70,21 @@ const setF64 = v => {
   //showBitsInfo();
 };
 
-const setFloat = floatStr => {
-  float = Number(floatStr);
-  if (isNaN(float)) {
-    try {
-      float = parseFloat(new Function(`return (${floatStr});`)(), 10);
-    } catch (_) {
-      float = NaN;
+const setFloat = floatStrOrJs => {
+  f64Str = toFloatStr(true)(fromFloatStr(true)(floatStrOrJs));
+  if (f64Str === toFloatStr(true)(fromNumber(true)(NaN))) try { // Default NaN?
+    // Try to evaluate input
+    const result = new Function(`return (${floatStrOrJs});`)();
+    if (typeof result === 'number') {
+      f64Str = toFloatStr(true)(fromNumber(true)(result));
     }
-  }
+  } catch (_) {}
   showBits();
 };
 
 const applyFloat = floatStr => {
-  if (floatStr === toFloatStr(round(float))) {
-    float = round(float);
+  if (floatStr === toFloatStr(f64)(bytes())) {
+    f64Str = toFloatStr(f64)(bytes());
   }
   showFloat();
 };
@@ -73,4 +102,11 @@ $bits.addEventListener('keydown', e => {
   if (e.keyCode === 13) { // On Enter
     changeBits(e.target.value);
   }
+});
+
+let scrollY = 0;
+
+window.addEventListener('scroll', e => {
+  scrollY = window.scrollY;
+  console.log(scrollY);
 });

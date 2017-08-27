@@ -54,9 +54,10 @@
 #bits {
   position: relative;
 }
-#bits input {
+#bits {
   background-color: rgba(255, 255, 255, 0.5);
-  position: absolute;
+  /*position: absolute;*/
+  width: 700px;
   top: 0;
   left: 0;
 }
