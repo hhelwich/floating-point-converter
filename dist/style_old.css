@@ -1,0 +1,63 @@
+#byte-order {
+  font-weight: bold;
+}
+
+.converter {
+  text-align: center;
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  z-index: 100;
+
+  margin-top: -200px;
+
+  width: 800px;
+  margin-left: -300px;
+}
+.number {
+  font-family:Consolas,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New, monospace;
+
+  /*
+  padding: 0;
+  margin: 0;
+  border: 0;
+  */
+}
+.foo {
+  overflow: hidden;
+  padding-top: 1px;
+  padding-bottom: 1px;
+  padding-left: 0px;
+  padding-right: 0px;
+  border-left-width: 2px;
+  border-top-width: 2px;
+  border-bottom-width: 2px;
+  border-right-width: 2px;
+}
+#numberList {
+  float:right;
+}
+.sign {
+	float: left;
+  background-color: blue;
+}
+
+.exponent {
+	float: left;
+  background-color: blueviolet;
+}
+
+.mantissa {
+	float: left;
+  background-color: brown;
+}
+#bits {
+  position: relative;
+}
+#bits {
+  background-color: rgba(255, 255, 255, 0.5);
+  /*position: absolute;*/
+  width: 700px;
+  top: 0;
+  left: 0;
+}
