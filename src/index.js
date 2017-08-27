@@ -12,6 +12,14 @@ let f64Str = toFloatStr(true)(fromNumber(true)(Math.PI));
 
 const bytes = () => fromFloatStr(f64)(f64Str);
 
+(() => { // Apply styling
+  // Center inputs
+  const $inputs = document.getElementById('inputs');
+  $inputs.style.marginLeft = `-${Math.round($inputs.offsetWidth / 2)}px`;
+  $inputs.style.marginTop = `-${Math.round($inputs.offsetHeight / 2)}px`;
+  $inputs.style.left = $inputs.style.top = '50%';
+})();
+
 const showFloat = () => {
   $float.value = toFloatStr(f64)(bytes());
 };
@@ -40,8 +48,7 @@ showBits();
 
 const createNumberElement = (floatStr, selected) => {
   const div = document.createElement('div');
-  div.innerHTML = `<div class="card text-center ${selected?' card-primary' : ''}"><div class="card-block" >${
-    floatStr}</div></div>`;
+  div.innerHTML = `<div class="number${selected? ' selected' : ''}">${floatStr}</div>`;
   return div.childNodes[0];
 };
 
@@ -52,12 +59,17 @@ const createNumberElement = (floatStr, selected) => {
   const bs = bytes();
   $numberList.appendChild(createNumberElement(toFloatStr(f64)(bs), true));
   let nbs = bs, pbs = bs;
+  let i = 0;
   while (docHeight < winHeight * 3) {
     nbs = nextFloat(nbs);
     $numberList.prepend(createNumberElement(toFloatStr(f64)(nbs)));
     pbs = prevFloat(pbs);
     $numberList.appendChild(createNumberElement(toFloatStr(f64)(pbs)));
     docHeight = document.body.clientHeight;
+    if (i++ > 100) {
+      console.warn('infinite loop');
+      break;
+    }
   }
   //$window.scrollTop(($document.height() - winHeight) / 2);
 })();
