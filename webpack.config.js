@@ -1,4 +1,7 @@
 const path = require('path');
+const webpack = require('webpack');
+
+const DEV = process.env.DEV_ENV === 'true';
 
 module.exports = {
   entry: './src/index.js',
@@ -19,5 +22,10 @@ module.exports = {
         }
       }
     ]
-  }
+  },
+  plugins: DEV ? [] : [
+    new webpack.optimize.UglifyJsPlugin({
+      compress: { warnings: false }
+    })
+  ]
 };
