@@ -53,23 +53,18 @@ const createNumberElement = (floatStr, selected) => {
 };
 
 (() => {
-  let docHeight = document.body.clientHeight;
+  let docHeight = $numberList.clientHeight;
   let winHeight = window.innerHeight;
   //$numberList.append('<div class="card text-center card-primary"><div class="card-block" >' + float + '</div></div>');
   const bs = bytes();
   $numberList.appendChild(createNumberElement(toFloatStr(f64)(bs), true));
   let nbs = bs, pbs = bs;
-  let i = 0;
-  while (docHeight < winHeight * 3) {
+  while (docHeight < winHeight * 2) {
     nbs = nextFloat(nbs);
     $numberList.prepend(createNumberElement(toFloatStr(f64)(nbs)));
     pbs = prevFloat(pbs);
     $numberList.appendChild(createNumberElement(toFloatStr(f64)(pbs)));
-    docHeight = document.body.clientHeight;
-    if (i++ > 100) {
-      console.warn('infinite loop');
-      break;
-    }
+    docHeight = $numberList.clientHeight;
   }
   //$window.scrollTop(($document.height() - winHeight) / 2);
 })();
@@ -116,9 +111,36 @@ $bits.addEventListener('keydown', e => {
   }
 });
 
-let scrollY = 0;
+const scrolled = up => () => {
+  const height = $numberList.clientHeight; // Height of number
+  const nbrs = $numberList.childNodes;
+  const count = Math.round(nbrs.length * 0.25); // Count of numbers to add/remove
+  let float = fromFloatStr(f64)((up ? $numberList.firstChild : $numberList.lastChild).innerText);
+  // Add some numbers
+  for (let i = 0; i < count; i++) {
+    float = (up ? nextFloat : prevFloat)(float);
+    if (up) {
+      $numberList.insertBefore(createNumberElement(toFloatStr(f64)(float)), $numberList.firstChild);
+    } else {
+      $numberList.appendChild(createNumberElement(toFloatStr(f64)(float)));
+    }
+  };
+  const scroll = $numberList.clientHeight - height;
+  // Remove some numbers
+  for (let i = 0; i < count; i++) {
+    (up ? $numberList.lastChild : $numberList.firstChild).remove();
+  };
+  // Scroll to same position as before
+  window.scrollTo(0, window.scrollY + (up ? scroll : -scroll));
+};
+
+const scrolledUp = scrolled(true);
+const scrolledDown = scrolled(false);
 
 window.addEventListener('scroll', e => {
-  scrollY = window.scrollY;
-  console.log(scrollY);
+  if (window.scrollY <= 0) { // Scrolled up
+    scrolledUp();
+  } else if (window.scrollY + window.innerHeight >= $numberList.clientHeight + $numberList.offsetTop) { // Scrolled down
+    scrolledDown();
+  }
 });
