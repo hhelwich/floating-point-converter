@@ -55,32 +55,12 @@ const createNumberElement = (floatStr, selected) => {
   return div.childNodes[0];
 };
 
-(() => {
-  let docHeight = $numberList.clientHeight;
-  let winHeight = window.innerHeight;
-  const bs = bytes();
-  $numberList.innerHTML = ''; // Make sure no child nodes
-  $numberList.appendChild(createNumberElement(toFloatStr(f64)(bs), true));
-  let nbs = bs, pbs = bs;
-  while (docHeight < winHeight * 2) {
-    nbs = nextFloat(nbs);
-    $numberList.prepend(createNumberElement(toFloatStr(f64)(nbs)));
-    pbs = prevFloat(pbs);
-    $numberList.appendChild(createNumberElement(toFloatStr(f64)(pbs)));
-    docHeight = $numberList.clientHeight;
-  }
-})();
-
-// Foo
-const setF64 = v => {
-  f64 = v;
-  showFloat();
-  showBits();
-  //showBitsInfo();
-  updateNumbers();
-};
-
 const updateNumbers = () => {
+  // Assure there are enough number elments
+  while ($numberList.clientHeight < window.innerHeight * 2) {
+    $numberList.appendChild(createNumberElement('0'));
+  }
+  // Set content
   window.scrollTo(0, Math.floor((numberListHeight() - window.innerHeight) / 2)); // Scroll to center of numbers
   const $numbers = $numberList.childNodes;
   const centerIdx = Math.floor($numbers.length / 2);
@@ -101,6 +81,20 @@ const updateNumbers = () => {
     $numbers[i].classList.remove(classSelected);
   }
 };
+
+// Foo
+const setF64 = v => {
+  f64 = v;
+  showFloat();
+  showBits();
+  //showBitsInfo();
+  updateNumbers();
+};
+
+(() => {
+  $numberList.innerHTML = ''; // Assure no child nodes
+  updateNumbers();
+})();
 
 const setFloatStr = fStr => {
   f64Str = fStr;
@@ -178,3 +172,5 @@ window.addEventListener('scroll', e => {
     scrolledDown();
   }
 });
+
+window.addEventListener('resize', updateNumbers);
