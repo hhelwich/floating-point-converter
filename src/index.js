@@ -137,6 +137,7 @@ $bits.addEventListener('keydown', e => {
 });
 
 const scrolled = up => () => {
+  const scrollY = window.scrollY;
   const height = $numberList.clientHeight; // Height of number
   const nbrs = $numberList.childNodes;
   const count = Math.round(nbrs.length * 0.25); // Count of numbers to add/remove
@@ -153,13 +154,14 @@ const scrolled = up => () => {
       $numberList.appendChild(nbrEl);
     }
   };
-  const scroll = $numberList.clientHeight - height;
+  const heightDiff = $numberList.clientHeight - height;
   // Remove some numbers
   for (let i = 0; i < count; i++) {
     (up ? $numberList.lastChild : $numberList.firstChild).remove();
   };
-  // Scroll to same position as before
-  window.scrollTo(0, window.scrollY + (up ? scroll : -scroll));
+  const scrollDiff = window.scrollY - scrollY;
+  const scroll = heightDiff + scrollDiff;
+  window.scrollBy(0, up ? scroll : -scroll);
 };
 
 const scrolledUp = scrolled(true);
