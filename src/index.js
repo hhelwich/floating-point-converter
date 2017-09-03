@@ -122,7 +122,7 @@ const applyFloat = floatStr => {
 };
 
 // Add event listeners
-$bitCount.forEach((r, i) => { r.addEventListener('change', () => { setF64(!!i); }, 0); });
+Array.prototype.slice.call($bitCount).forEach((r, i) => { r.addEventListener('change', () => { setF64(!!i); }, 0); });
 $float.addEventListener('input', e => { setFloatOrJs(e.target.value); });
 $float.addEventListener('keydown', e => {
   if (e.keyCode === 13) { // On Enter
@@ -136,8 +136,10 @@ $bits.addEventListener('keydown', e => {
   }
 });
 
+const getScrollY = () => window.pageYOffset;
+
 const scrolled = up => () => {
-  const scrollY = window.scrollY;
+  const scrollY = getScrollY();
   const height = $numberList.clientHeight; // Height of number
   const nbrs = $numberList.childNodes;
   const count = Math.round(nbrs.length * 0.25); // Count of numbers to add/remove
@@ -157,9 +159,9 @@ const scrolled = up => () => {
   const heightDiff = $numberList.clientHeight - height;
   // Remove some numbers
   for (let i = 0; i < count; i++) {
-    (up ? $numberList.lastChild : $numberList.firstChild).remove();
+    $numberList.removeChild(up ? $numberList.lastChild : $numberList.firstChild);
   };
-  const scrollDiff = window.scrollY - scrollY;
+  const scrollDiff = getScrollY() - scrollY;
   const scroll = heightDiff + scrollDiff;
   window.scrollBy(0, up ? scroll : -scroll);
 };
@@ -168,9 +170,9 @@ const scrolledUp = scrolled(true);
 const scrolledDown = scrolled(false);
 
 window.addEventListener('scroll', e => {
-  if (window.scrollY <= 0) { // Scrolled up
+  if (getScrollY() <= 0) { // Scrolled up
     scrolledUp();
-  } else if (window.scrollY + window.innerHeight >= numberListHeight()) { // Scrolled down
+  } else if (getScrollY() + window.innerHeight >= numberListHeight()) { // Scrolled down
     scrolledDown();
   }
 });

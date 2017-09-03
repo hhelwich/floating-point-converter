@@ -42,7 +42,7 @@ export const toInt = bytes => bytes.reduce((n, byte) => {
 
 // Convert a number to a byte array (4 or 8 bytes) holding the floating point representation (32 or 64 bit)
 export const fromNumber = f64 => float => {
-  const bytes = Array.from(new Uint8Array(new (f64 ? Float64Array : Float32Array)([float]).buffer));
+  const bytes = Array.prototype.slice.call(new Uint8Array(new (f64 ? Float64Array : Float32Array)([float]).buffer));
   return littleEndian ? bytes.reverse() : bytes;
 };
 
