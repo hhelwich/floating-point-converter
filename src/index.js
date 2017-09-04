@@ -49,10 +49,18 @@ showBits();
 
 const classSelected = 'selected';
 
+const clickOnNumber = e => {
+  setFloatStr(e.target.innerText);
+  showFloat();
+  showBits();
+};
+
 const createNumberElement = (floatStr, selected) => {
-  const div = document.createElement('div');
+  let div = document.createElement('div');
   div.innerHTML = `<div class="number${selected? ` ${classSelected}` : ''}">${floatStr}</div>`;
-  return div.childNodes[0];
+  div = div.childNodes[0];
+  div.addEventListener('click', clickOnNumber);
+  return div;
 };
 
 const updateNumbers = () => {

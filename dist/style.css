@@ -58,4 +58,9 @@ input {
 
 div.number {
   padding: 5px;
+  cursor: pointer;
+}
+
+div.number:hover {
+  background-color: lightblue;
 }
