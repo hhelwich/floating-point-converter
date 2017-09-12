@@ -1,5 +1,5 @@
 const { fromBitsStr, fromNumber, toNumber, fromInt, toBitsStr, toHexStr, toInt, roundFloat32, toFloatStr,
-  fromFloatStr, nextFloat, prevFloat, fromHexStr } = require('./float');
+  fromFloatStr, nextFloat, prevFloat, fromHexStr, evalFloatStr } = require('./float');
 
 const fromNumber64 = n => toHexStr(fromNumber(true)(n));
 const fromNumber32 = n => toHexStr(fromNumber(false)(n));
@@ -355,6 +355,60 @@ describe('prevFloat', () => {
       expect(prevFloat(nextFloat(bytes.slice()))).toEqual(bytes);
       expect(nextFloat(prevFloat(bytes.slice()))).toEqual(bytes);
     }
+  });
+
+});
+
+describe('evalFloatStr', () => {
+
+  it('preserves float32 strings', () => {
+    expect(evalFloatStr(true)('4.3203125')).toBe('4.3203125');
+    expect(evalFloatStr(false)('4.3203125')).toBe('4.3203125');
+  });
+
+  it('evaluates JS code', () => {
+    expect(evalFloatStr(true)('Math.round(Math.PI * 1337 / 100)')).toBe('42');
+    expect(evalFloatStr(false)('Math.round(Math.PI * 1337 / 100)')).toBe('42');
+  });
+
+  it('preserves special values', () => {
+    // 64 bit
+    expect(evalFloatStr(true)('NaN(42)')).toBe('NaN(42)');
+    expect(evalFloatStr(true)('-NaN(42)')).toBe('-NaN(42)');
+    expect(evalFloatStr(true)('0')).toBe('0');
+    expect(evalFloatStr(true)('-0')).toBe('-0');
+    expect(evalFloatStr(true)('Infinity')).toBe('Infinity');
+    expect(evalFloatStr(true)('-Infinity')).toBe('-Infinity');
+    // 32 bit
+    expect(evalFloatStr(false)('NaN(42)')).toBe('NaN(42)');
+    expect(evalFloatStr(false)('-NaN(42)')).toBe('-NaN(42)');
+    expect(evalFloatStr(false)('0')).toBe('0');
+    expect(evalFloatStr(false)('-0')).toBe('-0');
+    expect(evalFloatStr(false)('Infinity')).toBe('Infinity');
+    expect(evalFloatStr(false)('-Infinity')).toBe('-Infinity');
+  });
+
+  it('expands NaN to default NaN', () => {
+    expect(evalFloatStr(true)('NaN')).toBe('NaN(2251799813685248)');
+    expect(evalFloatStr(false)('NaN')).toBe('NaN(4194304)');
+  });
+
+  it('expands unparseable string to default NaN', () => {
+    expect(evalFloatStr(true)('foo')).toBe('NaN(2251799813685248)');
+    expect(evalFloatStr(false)('foo')).toBe('NaN(4194304)');
+  });
+
+  it('rounds to float32 if needed', () => {
+    // Do not round for float64
+    expect(evalFloatStr(true)('3.141592653589793')).toBe('3.141592653589793');
+    expect(evalFloatStr(true)('Math.PI')).toBe('3.141592653589793');
+    expect(evalFloatStr(true)('NaN(2251799813685248)')).toBe('NaN(2251799813685248)');
+    expect(evalFloatStr(true)('-NaN(2251799813685248)')).toBe('-NaN(2251799813685248)');
+    // Round for float32
+    expect(evalFloatStr(false)('3.141592653589793')).toBe('3.1415927410125732');
+    expect(evalFloatStr(false)('Math.PI')).toBe('3.1415927410125732');
+    expect(evalFloatStr(false)('NaN(2251799813685248)')).toBe('NaN(4194304)');
+    expect(evalFloatStr(false)('-NaN(2251799813685248)')).toBe('-NaN(4194304)');
   });
 
 });

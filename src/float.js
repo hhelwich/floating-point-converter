@@ -137,3 +137,16 @@ const next = (inc, dec) => bytes => {
 
 export const nextFloat = next(incBytes, decBytes);
 export const prevFloat = next(decBytes, incBytes);
+
+// Takes a float string or a JavaScript expression that evaluates to number and return a float string.
+export const evalFloatStr = f64 => floatStrOrJs => {
+  let floatStr = toFloatStr(f64)(fromFloatStr(f64)(floatStrOrJs));
+  if (floatStr === toFloatStr(f64)(fromNumber(f64)(NaN))) try { // Default NaN?
+    // Try to evaluate input
+    const result = new Function(`return (${floatStrOrJs});`)();
+    if (typeof result === 'number') {
+      floatStr = toFloatStr(f64)(fromNumber(f64)(result));
+    }
+  } catch (_) {}
+  return floatStr;
+};
