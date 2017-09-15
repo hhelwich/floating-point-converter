@@ -5,7 +5,8 @@
   "scripts": {
     "test": "jest",
     "build": "webpack",
-    "start": "DEV_ENV=true webpack-dev-server --open"
+    "start": "DEV_ENV=true webpack-dev-server --open",
+    "lint": "eslint src webpack.config.js || true"
   },
   "repository": {
     "type": "git",
