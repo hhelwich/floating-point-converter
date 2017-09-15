@@ -1,7 +1,7 @@
-const path = require('path');
-const webpack = require('webpack');
+const path = require('path')
+const webpack = require('webpack')
 
-const DEV = process.env.DEV_ENV === 'true';
+const DEV = process.env.DEV_ENV === 'true'
 
 module.exports = {
   entry: './src/index.js',
@@ -28,4 +28,4 @@ module.exports = {
       compress: { warnings: false }
     })
   ]
-};
+}
