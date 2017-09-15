@@ -1,7 +1,8 @@
 import {
   littleEndian, toBitsStr, fromNumber, fromBitsStr, toFloatStr, fromFloatStr, nextFloat, prevFloat, evalFloatStr
 } from './float'
-import state from './state'
+import { state } from './state'
+import history from './history'
 
 const $bits = document.getElementById('bits')
 const $float = document.getElementById('float')
@@ -80,9 +81,7 @@ const setFloatValue = (() => {
   }
 })()
 
-const setFloatOrJs = floatStrOrJs => {
-  set({ fStr: floatStrOrJs })
-}
+const setFloatOrJs = floatStrOrJs => { set({ fStr: floatStrOrJs }) }
 
 let applyFloat = () => {}
 
@@ -172,7 +171,8 @@ window.addEventListener('resize', () => resizedWindow())
   $inputs.style.left = $inputs.style.top = '50%'
 })()
 
-const set = state(({ fStr, f64 }) => { // On state change
+const set = state((state) => { // On state change
+  const { fStr, f64 } = state
   const floatStr = evalFloatStr(f64)(fStr)
   const bytes = fromFloatStr(f64)(floatStr)
   updateChangeBits(f64)
@@ -183,6 +183,9 @@ const set = state(({ fStr, f64 }) => { // On state change
   $bits.value = toBitsStr(bytes)
   $bitCount[+f64].checked = true
   updateNumbers(f64, bytes)
+  historySet(state)
 })
+
+const historySet = history(set)
 
 set({ fStr: toFloatStr(true)(fromNumber(true)(Math.PI)), f64: true })

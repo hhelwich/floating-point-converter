@@ -10,9 +10,14 @@ const setProperty = (previousState = {}, action, newState) => propName => {
 }
 
 /**
+ * Returns true if the given two states are equal
+ */
+export const equals = (stateA, stateB) => stateA.fStr === stateB.fStr && stateA.f64 === stateB.f64
+
+/**
  * Create a state, register given state change handler and return a state setter.
  */
-export default changeHandler => {
+export const state = changeHandler => {
   let state
   return action => {
     const newState = {}
