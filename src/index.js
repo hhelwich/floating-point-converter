@@ -186,6 +186,6 @@ const set = state((state) => { // On state change
   historySet(state)
 })
 
-const historySet = history(set)
+const defaultState = { fStr: toFloatStr(true)(fromNumber(true)(Math.PI)), f64: true }
 
-set({ fStr: toFloatStr(true)(fromNumber(true)(Math.PI)), f64: true })
+const historySet = history(set, defaultState)

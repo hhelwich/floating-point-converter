@@ -1,7 +1,5 @@
 import { equals } from './state'
 
-const { history } = window
-
 const re = /^~+/
 
 export const stateToUrl = ({ fStr, f64 }) => `${f64 ? '' : '~'}` + fStr.replace(re, match => match + match)
@@ -17,17 +15,22 @@ export const urlToState = url => {
 
 const local = false
 
-export default set => {
+export default (set, defaultState) => {
+  const { history, location: { hash } } = window
   window.addEventListener('popstate', () => {
     const { state } = history
     if (state != null) {
-      set(window.history.state)
+      set(history.state)
     }
+  })
+  setTimeout(() => {
+    set(hash ? urlToState(hash.substr(1)) : defaultState)
   })
   return newState => {
     const { state } = history
     if (state == null || !equals(newState, state)) {
-      history.pushState(newState, '', `${local ? '#' : './'}${encodeURIComponent(stateToUrl(newState))}`)
+      history[state == null ? 'replaceState' : 'pushState'](
+        newState, '', `${local ? '#' : './'}${encodeURIComponent(stateToUrl(newState))}`)
     }
   }
 }
