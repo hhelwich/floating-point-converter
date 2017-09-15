@@ -147,6 +147,6 @@ export const evalFloatStr = f64 => floatStrOrJs => {
     if (typeof result === 'number') {
       floatStr = toFloatStr(f64)(fromNumber(f64)(result));
     }
-  } catch (_) {}
+  } catch (_) {} // eslint-disable-line no-empty
   return floatStr;
 };

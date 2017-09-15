@@ -1,5 +1,5 @@
-const { fromBitsStr, fromNumber, toNumber, fromInt, toBitsStr, toHexStr, toInt, roundFloat32, toFloatStr,
-  fromFloatStr, nextFloat, prevFloat, fromHexStr, evalFloatStr } = require('./float');
+import { fromBitsStr, fromNumber, toNumber, fromInt, toBitsStr, toHexStr, toInt, toFloatStr,
+  fromFloatStr, nextFloat, prevFloat, fromHexStr, evalFloatStr } from './float';
 
 const fromNumber64 = n => toHexStr(fromNumber(true)(n));
 const fromNumber32 = n => toHexStr(fromNumber(false)(n));
@@ -291,8 +291,6 @@ describe('fromFloatStr', () => {
 
 const nextF64 = fStr => toFloatStr(true)(nextFloat(fromFloatStr(true)(fStr)));
 const nextF32 = fStr => toFloatStr(false)(nextFloat(fromFloatStr(false)(fStr)));
-const prevF64 = fStr => toFloatStr(true)(prevFloat(fromFloatStr(true)(fStr)));
-const prevF32 = fStr => toFloatStr(false)(prevFloat(fromFloatStr(false)(fStr)));
 
 describe('nextFloat', () => {
 
