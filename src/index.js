@@ -1,59 +1,36 @@
-import { littleEndian, toBitsStr, fromNumber, toNumber, fromBitsStr, toFloatStr, fromFloatStr,
-  nextFloat, prevFloat } from './float';
+import {
+  littleEndian, toBitsStr, fromNumber, fromBitsStr, toFloatStr, fromFloatStr, nextFloat, prevFloat, evalFloatStr
+} from './float';
+import state from './state';
 
 const $bits = document.getElementById('bits');
 const $float = document.getElementById('float');
 const $numberList = document.getElementById('number-list');
+$numberList.innerHTML = ''; // Assure no child nodes
 const $byteOrder = document.getElementById('byte-order');
 const $bitCount = document.querySelectorAll('input[type=radio]'); // Assume 32-bit radio comes first
 
 const numberListHeight = () => $numberList.clientHeight + $numberList.offsetTop;
 
-let f64 = true;
-let f64Str = toFloatStr(true)(fromNumber(true)(Math.PI));
+let changeBits = () => {};
 
-const bytes = () => fromFloatStr(f64)(f64Str);
-
-(() => { // Apply styling
-  // Center inputs
-  const $inputs = document.getElementById('inputs');
-  $inputs.style.marginLeft = `-${Math.round($inputs.offsetWidth / 2)}px`;
-  $inputs.style.marginTop = `-${Math.round($inputs.offsetHeight / 2)}px`;
-  $inputs.style.left = $inputs.style.top = '50%';
-})();
-
-const showFloat = () => {
-  $float.value = toFloatStr(f64)(bytes());
-};
-
-const showBits = () => {
-  $bits.value = toBitsStr(bytes());
-};
-
-const changeBits = bitsStr => {
-  if (bitsStr.length !== (f64 ? 8 : 4) * 8) {
-    // Assure correct length and fill with trailing zeros if neccesary
-    bitsStr = bitsStr.concat(Array(65).join('0')).slice(0, (f64 ? 8 : 4) * 8);
-  }
-  setFloatStr(toFloatStr(f64)(fromBitsStr(bitsStr)));
-  showFloat();
+const updateChangeBits = (f64) => {
+  changeBits = bitsStr => {
+    if (bitsStr.length !== (f64 ? 8 : 4) * 8) {
+      // Assure correct length and fill with trailing zeros if neccesary
+      bitsStr = bitsStr.concat(Array(65).join('0')).slice(0, (f64 ? 8 : 4) * 8);
+    }
+    set({ fStr: toFloatStr(f64)(fromBitsStr(bitsStr)) });
+  };
 };
 
 // Init dom state
 
 $byteOrder.innerHTML = `${littleEndian ? 'little' : 'big'} endian`;
-$bitCount[+f64].checked = true;
-showFloat();
-showBits();
-//showBitsInfo();
 
 const classSelected = 'selected';
 
-const clickOnNumber = e => {
-  setFloatStr(e.target.innerText);
-  showFloat();
-  showBits();
-};
+const clickOnNumber = e => { set({ fStr: e.target.innerText }); };
 
 const createNumberElement = (floatStr, selected) => {
   let div = document.createElement('div');
@@ -63,7 +40,7 @@ const createNumberElement = (floatStr, selected) => {
   return div;
 };
 
-const updateNumbers = () => {
+const updateNumbers = (f64, bytes) => {
   // Assure there are enough number elments
   while ($numberList.clientHeight < window.innerHeight * 2) {
     $numberList.appendChild(createNumberElement('0'));
@@ -72,17 +49,16 @@ const updateNumbers = () => {
   window.scrollTo(0, Math.floor((numberListHeight() - window.innerHeight) / 2)); // Scroll to center of numbers
   const $numbers = $numberList.childNodes;
   const centerIdx = Math.floor($numbers.length / 2);
-  const bs = bytes();
-  const fStr = toFloatStr(f64)(bs);
+  const fStr = toFloatStr(f64)(bytes);
   $numbers[centerIdx].innerText = fStr;
   $numbers[centerIdx].classList.add(classSelected);
-  let nbs = bs;
+  let nbs = bytes;
   for (let i = centerIdx + 1; i < $numbers.length; i++) {
     nbs = prevFloat(nbs);
     $numbers[i].innerText = toFloatStr(f64)(nbs);
     $numbers[i].classList.remove(classSelected);
   }
-  nbs = bs;
+  nbs = bytes;
   for (let i = centerIdx - 1; i >= 0; i--) {
     nbs = nextFloat(nbs);
     $numbers[i].innerText = toFloatStr(f64)(nbs);
@@ -90,47 +66,37 @@ const updateNumbers = () => {
   }
 };
 
-// Foo
-const setF64 = v => {
-  f64 = v;
-  showFloat();
-  showBits();
-  //showBitsInfo();
-  updateNumbers();
-};
-
-(() => {
-  $numberList.innerHTML = ''; // Assure no child nodes
-  updateNumbers();
+const setFloatValue = (() =>  {
+  let previousf64;
+  let previousEvaledFloatStr;
+  return (f64, floatStr, evaledFloatStr) => {
+    if ($float.value !== floatStr) {
+      $float.value = floatStr;
+    } else if (previousf64 && !f64 && previousEvaledFloatStr !== evaledFloatStr) {
+      $float.value = evaledFloatStr;
+    }
+    previousf64 = f64;
+    previousEvaledFloatStr = evaledFloatStr;
+  };
 })();
 
-const setFloatStr = fStr => {
-  f64Str = fStr;
-  updateNumbers();
-};
-
 const setFloatOrJs = floatStrOrJs => {
-  let fStr = toFloatStr(true)(fromFloatStr(true)(floatStrOrJs));
-  if (fStr === toFloatStr(true)(fromNumber(true)(NaN))) try { // Default NaN?
-    // Try to evaluate input
-    const result = new Function(`return (${floatStrOrJs});`)();
-    if (typeof result === 'number') {
-      fStr = toFloatStr(true)(fromNumber(true)(result));
-    }
-  } catch (_) {}
-  setFloatStr(fStr);
-  showBits();
+  set({ fStr: floatStrOrJs });
 };
 
-const applyFloat = floatStr => {
-  if (floatStr === toFloatStr(f64)(bytes())) {
-    setFloatStr(toFloatStr(f64)(bytes()));
-  }
-  showFloat();
+let applyFloat = () => {};
+
+const updateApplyFloat = f64 => {
+  applyFloat = (floatStrOrJs) => {
+    const floatStr = evalFloatStr(f64)(floatStrOrJs);
+    set({ fStr: floatStr });
+  };
 };
 
 // Add event listeners
-Array.prototype.slice.call($bitCount).forEach((r, i) => { r.addEventListener('change', () => { setF64(!!i); }, 0); });
+Array.prototype.slice.call($bitCount).forEach((r, i) => { r.addEventListener('change', () => {
+  set({ f64: !!i });
+}, 0); });
 $float.addEventListener('input', e => { setFloatOrJs(e.target.value); });
 $float.addEventListener('keydown', e => {
   if (e.keyCode === 13) { // On Enter
@@ -146,13 +112,13 @@ $bits.addEventListener('keydown', e => {
 
 const getScrollY = () => window.pageYOffset;
 
-const scrolled = up => () => {
+const scrolled = (up, bytes, f64) => () => {
   const scrollY = getScrollY();
   const height = $numberList.clientHeight; // Height of number
   const nbrs = $numberList.childNodes;
   const count = Math.round(nbrs.length * 0.25); // Count of numbers to add/remove
   let float = fromFloatStr(f64)((up ? $numberList.firstChild : $numberList.lastChild).innerText);
-  const fStrSel = toFloatStr(f64)(bytes());
+  const fStrSel = toFloatStr(f64)(bytes);
   // Add some numbers
   for (let i = 0; i < count; i++) {
     float = (up ? nextFloat : prevFloat)(float);
@@ -163,21 +129,26 @@ const scrolled = up => () => {
     } else {
       $numberList.appendChild(nbrEl);
     }
-  };
+  }
   const heightDiff = $numberList.clientHeight - height;
   // Remove some numbers
   for (let i = 0; i < count; i++) {
     $numberList.removeChild(up ? $numberList.lastChild : $numberList.firstChild);
-  };
+  }
   const scrollDiff = getScrollY() - scrollY;
   const scroll = heightDiff + scrollDiff;
   window.scrollBy(0, up ? scroll : -scroll);
 };
 
-const scrolledUp = scrolled(true);
-const scrolledDown = scrolled(false);
+let scrolledUp = () => {};
+let scrolledDown = scrolledUp;
 
-window.addEventListener('scroll', e => {
+const updateScrolled = (bytes, f64) => {
+  scrolledUp = scrolled(true, bytes, f64);
+  scrolledDown = scrolled(false, bytes, f64);
+};
+
+window.addEventListener('scroll', () => {
   if (getScrollY() <= 0) { // Scrolled up
     scrolledUp();
   } else if (getScrollY() + window.innerHeight >= numberListHeight()) { // Scrolled down
@@ -186,3 +157,25 @@ window.addEventListener('scroll', e => {
 });
 
 window.addEventListener('resize', updateNumbers);
+
+(() => { // Apply styling
+  // Center inputs
+  const $inputs = document.getElementById('inputs');
+  $inputs.style.marginLeft = `-${Math.round($inputs.offsetWidth / 2)}px`;
+  $inputs.style.marginTop = `-${Math.round($inputs.offsetHeight / 2)}px`;
+  $inputs.style.left = $inputs.style.top = '50%';
+})();
+
+const set = state(({ fStr, f64 }) => { // On state change
+  const floatStr = evalFloatStr(f64)(fStr);
+  const bytes = fromFloatStr(f64)(floatStr);
+  updateChangeBits(f64);
+  updateApplyFloat(f64);
+  updateScrolled(bytes, f64);
+  setFloatValue(f64, fStr, floatStr);
+  $bits.value = toBitsStr(bytes);
+  $bitCount[+f64].checked = true;
+  updateNumbers(f64, bytes);
+});
+
+set({ fStr: toFloatStr(true)(fromNumber(true)(Math.PI)), f64: true });

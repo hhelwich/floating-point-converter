@@ -17,7 +17,7 @@ export default changeHandler => {
   return action => {
     const newState = {};
     const setProp = setProperty(state, action, newState);
-    const changed = ['f64Str', 'f64'].map(setProp);
+    const changed = ['fStr', 'f64'].map(setProp);
     if (changed.some(b => b)) {
       changeHandler(state = newState);
     }
