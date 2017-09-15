@@ -144,10 +144,8 @@ export const evalFloatStr = f64 => floatStrOrJs => {
   if (floatStr === toFloatStr(f64)(fromNumber(f64)(NaN))) {
     try { // Default NaN?
       // Try to evaluate input
-      const result = new Function(`return (${floatStrOrJs});`)() // eslint-disable-line no-new-func
-      if (typeof result === 'number') {
-        floatStr = toFloatStr(f64)(fromNumber(f64)(result))
-      }
+      const nbr = Number(new Function(`return (${floatStrOrJs});`)()) // eslint-disable-line no-new-func
+      floatStr = toFloatStr(f64)(fromNumber(f64)(nbr))
     } catch (_) {}
   }
   return floatStr
