@@ -1,3 +1,5 @@
+const props = ['fStr', 'f64']
+
 /**
  * Set property with given name on the new state.
  */
@@ -12,7 +14,7 @@ const setProperty = (previousState = {}, action, newState) => propName => {
 /**
  * Returns true if the given two states are equal
  */
-export const equals = (stateA, stateB) => stateA.fStr === stateB.fStr && stateA.f64 === stateB.f64
+export const equals = (stateA, stateB) => props.every(prop => stateA[prop] === stateB[prop])
 
 /**
  * Create a state, register given state change handler and return a state setter.
@@ -22,7 +24,7 @@ export const state = changeHandler => {
   return action => {
     const newState = {}
     const setProp = setProperty(state, action, newState)
-    const changed = ['fStr', 'f64'].map(setProp)
+    const changed = props.map(setProp)
     if (changed.some(b => b)) {
       changeHandler(state = newState)
     }
