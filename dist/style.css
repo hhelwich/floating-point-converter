@@ -28,14 +28,6 @@ input {
   border-radius: .25rem;
 }
 
-#float {
-  width: 250px;
-}
-
-#bits {
-  width: 700px; /* do with JS later */
-}
-
 #byte-order {
   font-weight: bold;
 }

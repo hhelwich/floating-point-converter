@@ -92,6 +92,20 @@ const updateApplyFloat = f64 => {
   }
 }
 
+// Width of a single number character
+const numberCharWidth = (() => {
+  const { body } = document
+  const div = document.createElement('div')
+  const numberCount = 128
+  div.classList.add('number')
+  div.style.display = 'inline'
+  div.textContent = Array(numberCount).join('0')
+  body.appendChild(div)
+  const { offsetWidth } = div
+  body.removeChild(div)
+  return offsetWidth / numberCount
+})()
+
 // Add event listeners
 Array.prototype.slice.call($bitCount).forEach((r, i) => {
   r.addEventListener('change', () => { set({ f64: !!i }) }, 0)
@@ -163,13 +177,23 @@ const updateResizedWindow = (f64, bytes) => {
 
 window.addEventListener('resize', () => resizedWindow())
 
-;(() => { // Apply styling
-  // Center inputs
+const centerInputs = () => {
   const $inputs = document.getElementById('inputs')
   $inputs.style.marginLeft = `-${Math.round($inputs.offsetWidth / 2)}px`
   $inputs.style.marginTop = `-${Math.round($inputs.offsetHeight / 2)}px`
   $inputs.style.left = $inputs.style.top = '50%'
-})()
+}
+
+const somePxls = 28
+const floatCharWidth = 32
+
+const setFloatWidth = () => {
+  $float.style.width = `${Math.round(numberCharWidth * floatCharWidth) + somePxls}px`
+}
+
+const setBitsWidth = f64 => {
+  $bits.style.width = `${Math.round(numberCharWidth * (f64 ? 64 : 32)) + somePxls}px`
+}
 
 const set = state((state) => { // On state change
   const { fStr, f64 } = state
@@ -184,6 +208,10 @@ const set = state((state) => { // On state change
   $bitCount[+f64].checked = true
   updateNumbers(f64, bytes)
   historySet(state)
+  // Adapt input element sizes and positions
+  setFloatWidth()
+  setBitsWidth(f64)
+  centerInputs()
 })
 
 const defaultState = { fStr: toFloatStr(true)(fromNumber(true)(Math.PI)), f64: true }
