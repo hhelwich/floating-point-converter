@@ -13,8 +13,6 @@ export const urlToState = url => {
   return { fStr, f64 }
 }
 
-const local = false
-
 export default (set, defaultState) => {
   const { history, location: { hash } } = window
   window.addEventListener('popstate', () => {
@@ -30,7 +28,7 @@ export default (set, defaultState) => {
     const { state } = history
     if (state == null || !equals(newState, state)) {
       history[state == null ? 'replaceState' : 'pushState'](
-        newState, '', `${local ? '#' : './'}${encodeURIComponent(stateToUrl(newState))}`)
+        newState, '', `./${encodeURIComponent(stateToUrl(newState))}`)
     }
   }
 }
