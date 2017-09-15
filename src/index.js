@@ -156,7 +156,13 @@ window.addEventListener('scroll', () => {
   }
 })
 
-window.addEventListener('resize', updateNumbers)
+let resizedWindow = () => {}
+
+const updateResizedWindow = (f64, bytes) => {
+  resizedWindow = () => updateNumbers(f64, bytes)
+}
+
+window.addEventListener('resize', () => resizedWindow())
 
 ;(() => { // Apply styling
   // Center inputs
@@ -172,6 +178,7 @@ const set = state(({ fStr, f64 }) => { // On state change
   updateChangeBits(f64)
   updateApplyFloat(f64)
   updateScrolled(bytes, f64)
+  updateResizedWindow(f64, bytes)
   setFloatValue(f64, fStr, floatStr)
   $bits.value = toBitsStr(bytes)
   $bitCount[+f64].checked = true
