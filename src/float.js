@@ -1,3 +1,9 @@
+
+// Show some info for browsers not supporting typed arrays
+if (typeof Uint16Array === 'undefined') {
+  window.alert('Your browser is too old. Compatible Browsers:\nChrome 7, Firefox 4, IE 10, Edge 12, Safari 5, Opera 11')
+}
+
 // Endianess of this system (untested…)
 export const littleEndian = new Uint16Array(new Uint8Array([0, 1]).buffer)[0] !== 1
 
