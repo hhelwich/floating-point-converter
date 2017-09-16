@@ -31,13 +31,13 @@ $byteOrder.innerHTML = `${littleEndian ? 'little' : 'big'} endian`
 
 const classSelected = 'selected'
 
-const clickOnNumber = e => { set({ fStr: e.target.innerText }) }
+const clickOnNumber = e => { set({ fStr: e.target.textContent }) }
 
 const createNumberElement = (floatStr, selected) => {
   let div = document.createElement('div')
   div.innerHTML = `<div class="number${selected ? ` ${classSelected}` : ''}">${floatStr}</div>`
   div = div.childNodes[0]
-  div.addEventListener('click', clickOnNumber)
+  div.addEventListener('click', clickOnNumber, false)
   return div
 }
 
@@ -51,18 +51,18 @@ const updateNumbers = (f64, bytes) => {
   const $numbers = $numberList.childNodes
   const centerIdx = Math.floor($numbers.length / 2)
   const fStr = toFloatStr(f64)(bytes)
-  $numbers[centerIdx].innerText = fStr
+  $numbers[centerIdx].textContent = fStr
   $numbers[centerIdx].classList.add(classSelected)
   let nbs = bytes
   for (let i = centerIdx + 1; i < $numbers.length; i++) {
     nbs = prevFloat(nbs)
-    $numbers[i].innerText = toFloatStr(f64)(nbs)
+    $numbers[i].textContent = toFloatStr(f64)(nbs)
     $numbers[i].classList.remove(classSelected)
   }
   nbs = bytes
   for (let i = centerIdx - 1; i >= 0; i--) {
     nbs = nextFloat(nbs)
-    $numbers[i].innerText = toFloatStr(f64)(nbs)
+    $numbers[i].textContent = toFloatStr(f64)(nbs)
     $numbers[i].classList.remove(classSelected)
   }
 }
@@ -108,20 +108,20 @@ const numberCharWidth = (() => {
 
 // Add event listeners
 Array.prototype.slice.call($bitCount).forEach((r, i) => {
-  r.addEventListener('change', () => { set({ f64: !!i }) }, 0)
+  r.addEventListener('change', () => { set({ f64: !!i }) }, false)
 })
-$float.addEventListener('input', e => { setFloatOrJs(e.target.value) })
+$float.addEventListener('input', e => { setFloatOrJs(e.target.value) }, false)
 $float.addEventListener('keydown', e => {
   if (e.keyCode === 13) { // On Enter
     applyFloat(e.target.value)
   }
-})
-$bits.addEventListener('input', e => { changeBits(e.target.value) })
+}, false)
+$bits.addEventListener('input', e => { changeBits(e.target.value) }, false)
 $bits.addEventListener('keydown', e => {
   if (e.keyCode === 13) { // On Enter
     changeBits(e.target.value)
   }
-})
+}, false)
 
 const getScrollY = () => window.pageYOffset
 
@@ -130,7 +130,7 @@ const scrolled = (up, bytes, f64) => () => {
   const height = $numberList.clientHeight // Height of number
   const nbrs = $numberList.childNodes
   const count = Math.round(nbrs.length * 0.25) // Count of numbers to add/remove
-  let float = fromFloatStr(f64)((up ? $numberList.firstChild : $numberList.lastChild).innerText)
+  let float = fromFloatStr(f64)((up ? $numberList.firstChild : $numberList.lastChild).textContent)
   const fStrSel = toFloatStr(f64)(bytes)
   // Add some numbers
   for (let i = 0; i < count; i++) {
@@ -167,7 +167,7 @@ window.addEventListener('scroll', () => {
   } else if (getScrollY() + window.innerHeight >= numberListHeight()) { // Scrolled down
     scrolledDown()
   }
-})
+}, false)
 
 let resizedWindow = () => {}
 
@@ -175,7 +175,7 @@ const updateResizedWindow = (f64, bytes) => {
   resizedWindow = () => updateNumbers(f64, bytes)
 }
 
-window.addEventListener('resize', () => resizedWindow())
+window.addEventListener('resize', () => resizedWindow(), false)
 
 const centerInputs = () => {
   const $inputs = document.getElementById('inputs')

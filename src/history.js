@@ -20,7 +20,7 @@ export default (set, defaultState) => {
     if (state != null) {
       set(state)
     }
-  })
+  }, false)
   setTimeout(() => {
     set(hash ? urlToState(decodeURIComponent(hash.substr(1))) : defaultState)
   })
