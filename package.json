@@ -6,7 +6,7 @@
     "test": "jest",
     "build": "webpack",
     "start": "DEV_ENV=true webpack-dev-server --open",
-    "lint": "eslint src webpack.config.js"
+    "lint": "eslint ."
   },
   "repository": {
     "type": "git",
@@ -37,5 +37,6 @@
     "regenerator-runtime": "^0.11.0",
     "webpack": "^3.5.5",
     "webpack-dev-server": "^2.6.1"
-  }
+  },
+  "eslintIgnore": ["dist/bundle.js"]
 }
