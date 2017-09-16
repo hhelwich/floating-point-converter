@@ -18,11 +18,11 @@ export default (set, defaultState) => {
   window.addEventListener('popstate', () => {
     const { state } = history
     if (state != null) {
-      set(history.state)
+      set(state)
     }
   })
   setTimeout(() => {
-    set(hash ? urlToState(hash.substr(1)) : defaultState)
+    set(hash ? urlToState(decodeURIComponent(hash.substr(1))) : defaultState)
   })
   return newState => {
     const { state } = history
