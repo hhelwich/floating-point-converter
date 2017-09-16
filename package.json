@@ -6,7 +6,7 @@
     "test": "jest",
     "build": "webpack",
     "start": "DEV_ENV=true webpack-dev-server --open",
-    "lint": "eslint src webpack.config.js || true"
+    "lint": "eslint src webpack.config.js"
   },
   "repository": {
     "type": "git",
@@ -27,8 +27,6 @@
     "babel-jest": "^20.0.3",
     "babel-loader": "^7.1.2",
     "babel-preset-env": "^1.6.0",
-    "babel-preset-es2015": "^6.24.1",
-    "babel-preset-stage-2": "^6.24.1",
     "eslint": "^4.6.1",
     "eslint-config-standard": "^10.2.1",
     "eslint-plugin-import": "^2.7.0",
