@@ -1,5 +1,5 @@
 import { fromBitsStr, fromNumber, toNumber, fromInt, toBitsStr, toHexStr, toInt, toFloatStr, fromFloatStr, nextFloat,
-  prevFloat, fromHexStr, evalFloatStr, subtract, floatPosition, firstSetBit } from './float'
+  prevFloat, fromHexStr, evalFloatStr, floatPosition } from './float'
 
 const fromNumber64 = n => toHexStr(fromNumber(true)(n))
 const fromNumber32 = n => toHexStr(fromNumber(false)(n))
@@ -411,69 +411,6 @@ describe('floatPosition', () => {
     expect(floatPosition(true)(fromNumber(true)(-1.7976931348623157e+308))).toBeCloseTo(0, 14)
     expect(floatPosition(true)(fromNumber(true)(-Infinity))).toBe(0)
     expect(floatPosition(true)(fromFloatStr(true)('-NaN(4503599627370495)'))).toBeLessThan(0)
-  })
-})
-
-describe('firstSetBit', () => {
-  it('returns first set bit for empty byte list', () => {
-    expect(firstSetBit([])).toBe(-1)
-  })
-  it('returns first set bit for single byte', () => {
-    expect(firstSetBit([0])).toBe(-1)
-    expect(firstSetBit([1])).toBe(0)
-    expect(firstSetBit([2])).toBe(1)
-    expect(firstSetBit([3])).toBe(1)
-    expect(firstSetBit([4])).toBe(2)
-    expect(firstSetBit([5])).toBe(2)
-    expect(firstSetBit([128])).toBe(7)
-    expect(firstSetBit([255])).toBe(7)
-  })
-  it('returns first set bit for more than one byte', () => {
-    expect(firstSetBit([1, 0])).toBe(8)
-    expect(firstSetBit([77, 42])).toBe(14)
-    expect(firstSetBit([0, 0])).toBe(-1)
-    expect(firstSetBit([0, 7])).toBe(2)
-    expect(firstSetBit([0, 0, 0, 7])).toBe(2)
-    expect(firstSetBit([123, 45, 67, 89])).toBe(30)
-    expect(firstSetBit(fromNumber(false)(Infinity))).toBe(30)
-    expect(firstSetBit(fromNumber(true)(Infinity))).toBe(62)
-  })
-})
-
-describe('subtract', () => {
-  it('subtracts empty lists', () => {
-    expect(subtract([], [])).toEqual([])
-  })
-  it('subtracts single bytes', () => {
-    expect(subtract([42], [7])).toEqual([35])
-    expect(subtract([42], [42])).toEqual([0])
-  })
-  it('subtracts multiple bytes', () => {
-    expect(subtract([5, 11, 77, 5], [2, 133, 224, 2])).toEqual([2, 133, 109, 3])
-    expect(subtract([2, 133, 224, 2], [2, 133, 224, 2])).toEqual([0, 0, 0, 0])
-    expect(subtract([2, 133, 224, 3], [2, 133, 224, 2])).toEqual([0, 0, 0, 1])
-  })
-  it('can handle lists with differnt number of bytes', () => {
-    expect(subtract([2, 133, 224, 2], [32, 173, 114])).toEqual([2, 101, 50, 144])
-    expect(subtract([0, 0, 2, 133, 224, 2], [32, 173, 114])).toEqual([0, 0, 2, 101, 50, 144])
-    expect(subtract([2, 133, 224, 2], [0, 0, 0, 32, 173, 114])).toEqual([0, 0, 2, 101, 50, 144])
-  })
-  it('throws if second number is greater than first number', () => {
-    expect(() => subtract([42], [50])).toThrow()
-    expect(() => subtract([2, 133, 224, 2], [2, 133, 224, 3])).toThrow()
-    expect(() => subtract([2, 133, 224, 2], [3, 2, 133, 224, 2])).toThrow()
-    expect(() => subtract([2, 133, 224, 2], [23, 1, 5, 32, 173, 114])).toThrow()
-    expect(() => subtract([0, 0, 0, 0, 0, 2, 133, 224, 2], [23, 1, 5, 32, 173, 114])).toThrow()
-  })
-  it('subtracts random numbers', () => {
-    for (let i = 0; i < 50; i++) {
-      const a = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER)
-      const b = Math.floor(Math.random() * (a + 1))
-      const bytesA = fromInt(a)
-      const bytesB = fromInt(b)
-      const bytesC = subtract(bytesA, bytesB)
-      expect(toInt(bytesC)).toBe(a - b)
-    }
   })
 })
 
