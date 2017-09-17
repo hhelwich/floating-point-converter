@@ -1,5 +1,5 @@
-import { fromBitsStr, fromNumber, toNumber, fromInt, toBitsStr, toHexStr, toInt, toFloatStr,
-  fromFloatStr, nextFloat, prevFloat, fromHexStr, evalFloatStr } from './float'
+import { fromBitsStr, fromNumber, toNumber, fromInt, toBitsStr, toHexStr, toInt, toFloatStr, fromFloatStr, nextFloat,
+  prevFloat, fromHexStr, evalFloatStr } from './float'
 
 const fromNumber64 = n => toHexStr(fromNumber(true)(n))
 const fromNumber32 = n => toHexStr(fromNumber(false)(n))
