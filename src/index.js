@@ -72,6 +72,9 @@ const setFloatValue = (() => {
   let previousEvaledFloatStr
   return (f64, floatStr, evaledFloatStr) => {
     if ($float.value !== floatStr) {
+      if (!f64 && previousf64 == null && evaledFloatStr !== evalFloatStr(true)(floatStr)) { // TODO Rethink state?
+        floatStr = evaledFloatStr
+      }
       $float.value = floatStr
     } else if (previousf64 && !f64 && previousEvaledFloatStr !== evaledFloatStr) {
       $float.value = evaledFloatStr
