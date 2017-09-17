@@ -156,3 +156,49 @@ export const evalFloatStr = f64 => floatStrOrJs => {
   }
   return floatStr
 }
+
+const zeros = n => Array.apply(null, Array(n)).map(() => 0)
+
+export const firstSetBit = (bytes, j = 0) => {
+  if (j >= bytes.length) {
+    return -1
+  }
+  const b = bytes[j]
+  let i = 7
+  for (; i >= 0 && (b & 1 << i) === 0; i--);
+  if (i >= 0) {
+    return i + (bytes.length - j - 1) * 8
+  }
+  return firstSetBit(bytes, j + 1)
+}
+
+export const floatPosition = f64 => bytes => {
+  const p = positive(bytes)
+  if (!p) {
+    bytes = negate(bytes.slice())
+  }
+  return 0.5 + (p ? 0.5 : -0.5) * (f64 ? toInt(bytes.slice(0, 6)) / 140668768878592 : toInt(bytes) / 2139095040)
+}
+
+// Expect both byte lists to have the same length
+const _subtract = (a, b, c = [], i = a.length - 1, u = 0) => {
+  if (i < 0) {
+    if (u !== 0) {
+      throw Error('Negative result')
+    }
+    return c
+  }
+  let ci = a[i] - b[i] - u
+  let v = 0
+  if (ci < 0) {
+    ci += 256
+    v = 1
+  }
+  c.unshift(ci)
+  return _subtract(a, b, c, i - 1, v)
+}
+
+const toSameLength = (a, otherLength) => a.length < otherLength ? zeros(otherLength - a.length).concat(a) : a
+
+// Same as from fromInt(toInt(a) - toInt(b))) but works for any int size
+export const subtract = (a, b) => _subtract(toSameLength(a, b.length), toSameLength(b, a.length))

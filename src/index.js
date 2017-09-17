@@ -1,6 +1,5 @@
-import {
-  littleEndian, toBitsStr, fromNumber, fromBitsStr, toFloatStr, fromFloatStr, nextFloat, prevFloat, evalFloatStr
-} from './float'
+import { littleEndian, toBitsStr, fromNumber, fromBitsStr, toFloatStr, fromFloatStr, nextFloat, prevFloat, evalFloatStr,
+  floatPosition } from './float'
 import { state } from './state'
 import history from './history'
 
@@ -10,6 +9,8 @@ const $numberList = document.getElementById('number-list')
 $numberList.innerHTML = '' // Assure no child nodes
 const $byteOrder = document.getElementById('byte-order')
 const $bitCount = document.querySelectorAll('input[type=radio]') // Assume 32-bit radio comes first
+const $totalPosition = document.getElementById('number-total-position')
+const ctx = $totalPosition.getContext('2d')
 
 const numberListHeight = () => $numberList.clientHeight + $numberList.offsetTop
 
@@ -174,8 +175,12 @@ window.addEventListener('scroll', () => {
 
 let resizedWindow = () => {}
 
-const updateResizedWindow = (f64, bytes) => {
-  resizedWindow = () => updateNumbers(f64, bytes)
+const updateResizedWindow = (f64, bytes, position) => {
+  resizedWindow = () => {
+    updateNumbers(f64, bytes)
+    updateCanvasSize()
+    updateTotalPosition(f64, bytes, position)
+  }
 }
 
 window.addEventListener('resize', () => resizedWindow(), false)
@@ -198,24 +203,52 @@ const setBitsWidth = f64 => {
   $bits.style.width = `${Math.round(numberCharWidth * (f64 ? 64 : 32)) + somePxls}px`
 }
 
+const updateCanvasSize = () => {
+  const { clientHeight, clientWidth } = $totalPosition
+  $totalPosition.width = clientWidth
+  $totalPosition.height = clientHeight
+}
+
+const updateTotalPosition = (() => {
+  let lastPHeight
+  return (f64, bytes, position) => {
+    const { width, height } = $totalPosition
+    const pHeight = Math.round((height - 1) * (1 - position))
+    if (pHeight !== lastPHeight) {
+      ctx.clearRect(0, 0, width, height)
+      // ctx.strokeStyle = '#000000'
+      ctx.beginPath()
+      ctx.moveTo(0, 0)
+      ctx.lineTo(width - 1, pHeight)
+      ctx.lineTo(0, height - 1)
+      ctx.stroke()
+      lastPHeight = pHeight
+    }
+  }
+})()
+
 const set = state((state) => { // On state change
   const { fStr, f64 } = state
   const floatStr = evalFloatStr(f64)(fStr)
   const bytes = fromFloatStr(f64)(floatStr)
+  const posititon = floatPosition(f64)(bytes)
   updateChangeBits(f64)
   updateApplyFloat(f64)
   updateScrolled(bytes, f64)
-  updateResizedWindow(f64, bytes)
+  updateResizedWindow(f64, bytes, posititon)
   setFloatValue(f64, fStr, floatStr)
   $bits.value = toBitsStr(bytes)
   $bitCount[+f64].checked = true
   updateNumbers(f64, bytes)
   historySet(state)
+  updateTotalPosition(f64, bytes, posititon)
   // Adapt input element sizes and positions
   setFloatWidth()
   setBitsWidth(f64)
   centerInputs()
 })
+
+updateCanvasSize()
 
 const defaultState = { fStr: toFloatStr(true)(fromNumber(true)(Math.PI)), f64: true }
 

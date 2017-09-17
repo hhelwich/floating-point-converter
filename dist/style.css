@@ -35,7 +35,15 @@ input:not([type]) {
 #number-list {
   position: absolute;
   width: auto;
+  right: 50px;
+}
+
+#number-total-position {
+  position: fixed;
+  width: 50px;
+  height: 100%;
   right: 0;
+  top: 0;
 }
 
 .number {
