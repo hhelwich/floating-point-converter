@@ -144,15 +144,28 @@ const next = (inc, dec) => bytes => {
 export const nextFloat = next(incBytes, decBytes)
 export const prevFloat = next(decBytes, incBytes)
 
+const mathOrigin = Math
+const mathProps = Object.getOwnPropertyNames(Math)
+const mathClone = () => mathProps.reduce((clone, key) => { clone[key] = mathOrigin[key]; return clone }, {})
+
+// Shadow window properties with undefined variables and create Math shortcut variables
+const evalVars = `${Object.getOwnPropertyNames(window).filter(key => key !== 'Math').join(',')},` +
+  `${mathProps.map(key => `${key}=Math.${key}`).join(',')}`
+
 // Takes a float string or a JavaScript expression that evaluates to number and return a float string.
 export const evalFloatStr = f64 => floatStrOrJs => {
   let floatStr = toFloatStr(f64)(fromFloatStr(f64)(floatStrOrJs))
   if (floatStr === toFloatStr(f64)(fromNumber(f64)(NaN))) {
     try { // Default NaN?
-      // Try to evaluate input
-      const nbr = Number(new Function(`return (${floatStrOrJs});`)()) // eslint-disable-line no-new-func
+      // Evaluate input
+      Math = mathClone() // eslint-disable-line no-global-assign
+      const nbr = Number(new Function( // eslint-disable-line no-new-func
+        `var ${evalVars};return (${floatStrOrJs});`).call(Object.create(null)))
+      Math = mathOrigin // eslint-disable-line no-global-assign
       floatStr = toFloatStr(f64)(fromNumber(f64)(nbr))
-    } catch (_) {}
+    } catch (_) {
+      Math = mathOrigin // eslint-disable-line no-global-assign
+    }
   }
   return floatStr
 }
