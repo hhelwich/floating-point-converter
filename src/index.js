@@ -1,18 +1,12 @@
-import { littleEndian, toBitsStr, fromNumber, fromBitsStr, toFloatStr, fromFloatStr, nextFloat, prevFloat, evalFloatStr,
-  toPosition } from './float'
-import { state } from './state'
-import history from './history'
+import { littleEndian, toBitsStr, fromBitsStr, toFloatStr, fromFloatStr, evalFloatStr } from './float'
+import { onChange } from './state'
+import './numberScroll'
+import './history'
 
 const $bits = document.getElementById('bits')
 const $float = document.getElementById('float')
-const $numberList = document.getElementById('number-list')
-$numberList.innerHTML = '' // Assure no child nodes
 const $byteOrder = document.getElementById('byte-order')
 const $bitCount = document.querySelectorAll('input[type=radio]') // Assume 32-bit radio comes first
-const $totalPosition = document.getElementById('number-total-position')
-const ctx = $totalPosition.getContext('2d')
-
-const numberListHeight = () => $numberList.clientHeight + $numberList.offsetTop
 
 let changeBits = () => {}
 
@@ -30,60 +24,7 @@ const updateChangeBits = (f64) => {
 
 $byteOrder.innerHTML = `${littleEndian ? 'little' : 'big'} endian`
 
-const classSelected = 'selected'
-
-const clickOnNumber = e => { set({ fStr: e.target.textContent }) }
-
-const createNumberElement = (floatStr, selected) => {
-  let div = document.createElement('div')
-  div.innerHTML = `<div class="number${selected ? ` ${classSelected}` : ''}">${floatStr}</div>`
-  div = div.childNodes[0]
-  div.addEventListener('click', clickOnNumber, false)
-  return div
-}
-
-const updateNumbers = (f64, bytes) => {
-  // Assure there are enough number elments
-  while ($numberList.clientHeight < window.innerHeight * 2) {
-    $numberList.appendChild(createNumberElement('0'))
-  }
-  // Set content
-  window.scrollTo(0, Math.floor((numberListHeight() - window.innerHeight) / 2)) // Scroll to center of numbers
-  const $numbers = $numberList.childNodes
-  const centerIdx = Math.floor($numbers.length / 2)
-  const fStr = toFloatStr(f64)(bytes)
-  $numbers[centerIdx].textContent = fStr
-  $numbers[centerIdx].classList.add(classSelected)
-  let nbs = bytes
-  for (let i = centerIdx + 1; i < $numbers.length; i++) {
-    nbs = prevFloat(nbs)
-    $numbers[i].textContent = toFloatStr(f64)(nbs)
-    $numbers[i].classList.remove(classSelected)
-  }
-  nbs = bytes
-  for (let i = centerIdx - 1; i >= 0; i--) {
-    nbs = nextFloat(nbs)
-    $numbers[i].textContent = toFloatStr(f64)(nbs)
-    $numbers[i].classList.remove(classSelected)
-  }
-}
-
-const setFloatValue = (() => {
-  let previousf64
-  let previousEvaledFloatStr
-  return (f64, floatStr, evaledFloatStr) => {
-    if ($float.value !== floatStr) {
-      if (!f64 && previousf64 == null && evaledFloatStr !== evalFloatStr(true)(floatStr)) { // TODO Rethink state?
-        floatStr = evaledFloatStr
-      }
-      $float.value = floatStr
-    } else if (previousf64 && !f64 && previousEvaledFloatStr !== evaledFloatStr) {
-      $float.value = evaledFloatStr
-    }
-    previousf64 = f64
-    previousEvaledFloatStr = evaledFloatStr
-  }
-})()
+const setFloatValue = floatStr => { $float.value = floatStr }
 
 const setFloatOrJs = floatStrOrJs => { set({ fStr: floatStrOrJs }) }
 
@@ -127,64 +68,6 @@ $bits.addEventListener('keydown', e => {
   }
 }, false)
 
-const getScrollY = () => window.pageYOffset
-
-const scrolled = (up, bytes, f64) => () => {
-  const scrollY = getScrollY()
-  const height = $numberList.clientHeight // Height of number
-  const nbrs = $numberList.childNodes
-  const count = Math.round(nbrs.length * 0.25) // Count of numbers to add/remove
-  let float = fromFloatStr(f64)((up ? $numberList.firstChild : $numberList.lastChild).textContent)
-  const fStrSel = toFloatStr(f64)(bytes)
-  // Add some numbers
-  for (let i = 0; i < count; i++) {
-    float = (up ? nextFloat : prevFloat)(float)
-    const fStr = toFloatStr(f64)(float)
-    const nbrEl = createNumberElement(fStr, fStrSel === fStr)
-    if (up) {
-      $numberList.insertBefore(nbrEl, $numberList.firstChild)
-    } else {
-      $numberList.appendChild(nbrEl)
-    }
-  }
-  const heightDiff = $numberList.clientHeight - height
-  // Remove some numbers
-  for (let i = 0; i < count; i++) {
-    $numberList.removeChild(up ? $numberList.lastChild : $numberList.firstChild)
-  }
-  const scrollDiff = getScrollY() - scrollY
-  const scroll = heightDiff + scrollDiff
-  window.scrollBy(0, up ? scroll : -scroll)
-}
-
-let scrolledUp = () => {}
-let scrolledDown = scrolledUp
-
-const updateScrolled = (bytes, f64) => {
-  scrolledUp = scrolled(true, bytes, f64)
-  scrolledDown = scrolled(false, bytes, f64)
-}
-
-window.addEventListener('scroll', () => {
-  if (getScrollY() <= 0) { // Scrolled up
-    scrolledUp()
-  } else if (getScrollY() + window.innerHeight >= numberListHeight()) { // Scrolled down
-    scrolledDown()
-  }
-}, false)
-
-let resizedWindow = () => {}
-
-const updateResizedWindow = (f64, bytes, position) => {
-  resizedWindow = () => {
-    updateNumbers(f64, bytes)
-    updateCanvasSize()
-    updateTotalPosition(f64, bytes, position)
-  }
-}
-
-window.addEventListener('resize', () => resizedWindow(), false)
-
 const centerInputs = () => {
   const $inputs = document.getElementById('inputs')
   $inputs.style.marginLeft = `-${Math.round($inputs.offsetWidth / 2)}px`
@@ -202,54 +85,17 @@ const setFloatWidth = () => {
 const setBitsWidth = f64 => {
   $bits.style.width = `${Math.round(numberCharWidth * (f64 ? 64 : 32)) + somePxls}px`
 }
-
-const updateCanvasSize = () => {
-  const { clientHeight, clientWidth } = $totalPosition
-  $totalPosition.width = clientWidth
-  $totalPosition.height = clientHeight
-}
-
-const updateTotalPosition = (() => {
-  let lastPHeight
-  return (f64, bytes, position) => {
-    const { width, height } = $totalPosition
-    const pHeight = Math.round((height - 1) * (1 - position))
-    if (pHeight !== lastPHeight) {
-      ctx.clearRect(0, 0, width, height)
-      // ctx.strokeStyle = '#000000'
-      ctx.beginPath()
-      ctx.moveTo(0, 0)
-      ctx.lineTo(width - 1, pHeight)
-      ctx.lineTo(0, height - 1)
-      ctx.stroke()
-      lastPHeight = pHeight
-    }
-  }
-})()
-
-const set = state((state) => { // On state change
+const set = onChange(state => { // On state change
   const { fStr, f64 } = state
   const floatStr = evalFloatStr(f64)(fStr)
   const bytes = fromFloatStr(f64)(floatStr)
-  const posititon = toPosition(f64)(bytes)
   updateChangeBits(f64)
   updateApplyFloat(f64)
-  updateScrolled(bytes, f64)
-  updateResizedWindow(f64, bytes, posititon)
-  setFloatValue(f64, fStr, floatStr)
+  setFloatValue(fStr)
   $bits.value = toBitsStr(bytes)
   $bitCount[+f64].checked = true
-  updateNumbers(f64, bytes)
-  historySet(state)
-  updateTotalPosition(f64, bytes, posititon)
   // Adapt input element sizes and positions
   setFloatWidth()
   setBitsWidth(f64)
   centerInputs()
 })
-
-updateCanvasSize()
-
-const defaultState = { fStr: toFloatStr(true)(fromNumber(true)(Math.PI)), f64: true }
-
-const historySet = history(set, defaultState)

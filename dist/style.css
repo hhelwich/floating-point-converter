@@ -51,11 +51,6 @@ input:not([type]) {
   font-family: Courier New, Courier, monospace;
 }
 
-.number.selected {
-  background-color: blue;
-  color: white;
-}
-
 div.number {
   padding: 5px;
   cursor: pointer;
@@ -63,4 +58,9 @@ div.number {
 
 div.number:hover {
   background-color: lightblue;
+}
+
+div.number.selected {
+  background-color: blue;
+  color: white;
 }

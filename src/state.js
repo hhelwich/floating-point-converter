@@ -16,17 +16,31 @@ const setProperty = (previousState = {}, action, newState) => propName => {
  */
 export const equals = (stateA, stateB) => props.every(prop => stateA[prop] === stateB[prop])
 
+let state
+
+const changeHandlers = []
+
+export const reset = () => {
+  state = undefined
+  changeHandlers.length = 0
+}
+
 /**
  * Create a state, register given state change handler and return a state setter.
  */
-export const state = changeHandler => {
-  let state
+export const onChange = changeHandler => {
+  changeHandlers.push(changeHandler)
   return action => {
     const newState = {}
     const setProp = setProperty(state, action, newState)
     const changed = props.map(setProp)
     if (changed.some(b => b)) {
-      changeHandler(state = newState)
+      state = newState
+      changeHandlers.forEach(handler => {
+        if (handler !== changeHandler) {
+          handler(state)
+        }
+      })
     }
   }
 }

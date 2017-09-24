@@ -1,4 +1,5 @@
-import { equals } from './state'
+import { fromNumber, toFloatStr } from './float'
+import { onChange, equals } from './state'
 
 const re = /^~+/
 
@@ -13,22 +14,30 @@ export const urlToState = url => {
   return { fStr, f64 }
 }
 
-export default (set, defaultState) => {
-  const { history, location: { hash } } = window
-  window.addEventListener('popstate', () => {
-    const { state } = history
-    if (state != null) {
-      set(state)
-    }
-  }, false)
-  setTimeout(() => {
-    set(hash ? urlToState(decodeURIComponent(hash.substr(1))) : defaultState)
-  })
-  return newState => {
-    const { state } = history
-    if (state == null || !equals(newState, state)) {
-      history[state == null ? 'replaceState' : 'pushState'](
-        newState, '', `./${encodeURIComponent(stateToUrl(newState))}`)
-    }
+const defaultState = { fStr: toFloatStr(true)(fromNumber(true)(Math.PI)), f64: true }
+
+const { history } = window
+
+const changeHandler = newState => {
+  const { state } = history
+  if (state == null || !equals(newState, state)) {
+    history[state == null ? 'replaceState' : 'pushState'](
+      newState, '', `./${encodeURIComponent(stateToUrl(newState))}`)
   }
 }
+
+const set = onChange(changeHandler)
+
+window.addEventListener('popstate', () => {
+  const { state } = history
+  if (state != null) {
+    set(state)
+  }
+}, false)
+
+setTimeout(() => {
+  const { location: { hash } } = window
+  const state = hash ? urlToState(decodeURIComponent(hash.substr(1))) : defaultState
+  changeHandler(state)
+  set(state)
+})
