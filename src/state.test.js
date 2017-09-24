@@ -1,4 +1,4 @@
-import { onChange, reset, equals } from './state'
+import { onChange, reset } from './state'
 
 describe('set', () => {
   beforeEach(reset)
@@ -75,27 +75,5 @@ describe('set', () => {
     expect(states.map(statesi => statesi.map(state => +state.fStr))).toEqual([
       [2, 3, 4], [1, 2, 4], [1, 3]
     ])
-  })
-})
-
-describe('equals', () => {
-  it('returns true for equal states', () => {
-    expect(equals({ fStr: 'foo', f64: true }, { fStr: 'foo', f64: true })).toBe(true)
-    expect(equals({ fStr: 'foo', f64: false }, { fStr: 'foo', f64: false })).toBe(true)
-  })
-  it('returns false for not equal states', () => {
-    expect(equals({ fStr: 'foo', f64: true }, { fStr: 'bar', f64: true })).toBe(false)
-    expect(equals({ fStr: 'foo', f64: true }, { fStr: 'foo', f64: false })).toBe(false)
-    expect(equals({ fStr: 'bar', f64: false }, { fStr: 'foo', f64: true })).toBe(false)
-  })
-  it('throws if at least one of the states is null or undefined', () => {
-    expect(() => { equals(null, { fStr: 'foo', f64: true }) }).toThrow()
-    expect(() => { equals(undefined, { fStr: 'foo', f64: true }) }).toThrow()
-    expect(() => { equals({ fStr: 'foo', f64: true }, null) }).toThrow()
-    expect(() => { equals({ fStr: 'foo', f64: true }, undefined) }).toThrow()
-    expect(() => { equals(undefined, undefined) }).toThrow()
-    expect(() => { equals(undefined, null) }).toThrow()
-    expect(() => { equals(null, undefined) }).toThrow()
-    expect(() => { equals(null, null) }).toThrow()
   })
 })

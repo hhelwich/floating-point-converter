@@ -1,5 +1,5 @@
 import { fromNumber, toFloatStr } from './float'
-import { onChange, equals } from './state'
+import { onChange } from './state'
 
 const re = /^~+/
 
@@ -18,26 +18,17 @@ const defaultState = { fStr: toFloatStr(true)(fromNumber(true)(Math.PI)), f64: t
 
 const { history } = window
 
-const changeHandler = newState => {
-  const { state } = history
-  if (state == null || !equals(newState, state)) {
-    history[state == null ? 'replaceState' : 'pushState'](
-      newState, '', `./${encodeURIComponent(stateToUrl(newState))}`)
-  }
-}
+const encodeState = state => `./${encodeURIComponent(stateToUrl(state))}`
 
-const set = onChange(changeHandler)
+const set = onChange(state => {
+  history.pushState(state, '', encodeState(state))
+})
 
-window.addEventListener('popstate', () => {
-  const { state } = history
-  if (state != null) {
-    set(state)
-  }
-}, false)
+window.addEventListener('popstate', () => { set(history.state) }, false)
 
 setTimeout(() => {
   const { location: { hash } } = window
   const state = hash ? urlToState(decodeURIComponent(hash.substr(1))) : defaultState
-  changeHandler(state)
+  history.replaceState(state, '', encodeState(state))
   set(state)
 })

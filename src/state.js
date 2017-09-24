@@ -11,11 +11,6 @@ const setProperty = (previousState = {}, action, newState) => propName => {
   return changed
 }
 
-/**
- * Returns true if the given two states are equal
- */
-export const equals = (stateA, stateB) => props.every(prop => stateA[prop] === stateB[prop])
-
 let state
 
 const changeHandlers = []
