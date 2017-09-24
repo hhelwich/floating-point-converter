@@ -1,5 +1,5 @@
 import { littleEndian, toBitsStr, fromNumber, fromBitsStr, toFloatStr, fromFloatStr, nextFloat, prevFloat, evalFloatStr,
-  floatPosition } from './float'
+  toPosition } from './float'
 import { state } from './state'
 import history from './history'
 
@@ -231,7 +231,7 @@ const set = state((state) => { // On state change
   const { fStr, f64 } = state
   const floatStr = evalFloatStr(f64)(fStr)
   const bytes = fromFloatStr(f64)(floatStr)
-  const posititon = floatPosition(f64)(bytes)
+  const posititon = toPosition(f64)(bytes)
   updateChangeBits(f64)
   updateApplyFloat(f64)
   updateScrolled(bytes, f64)

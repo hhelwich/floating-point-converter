@@ -1,5 +1,5 @@
 import { fromBitsStr, fromNumber, toNumber, fromInt, toBitsStr, toHexStr, toInt, toFloatStr, fromFloatStr, nextFloat,
-  prevFloat, fromHexStr, evalFloatStr, floatPosition } from './float'
+  prevFloat, fromHexStr, evalFloatStr, toPosition } from './float'
 
 const fromNumber64 = n => toHexStr(fromNumber(true)(n))
 const fromNumber32 = n => toHexStr(fromNumber(false)(n))
@@ -385,32 +385,32 @@ describe('evalFloatStr', () => {
   })
 })
 
-describe('floatPosition', () => {
+describe('toPosition', () => {
   it('gets the normalized position in the list of all floats (without NaN)', () => {
     // float32
-    expect(floatPosition(false)(fromFloatStr(false)('NaN(8388607)'))).toBeGreaterThan(1)
-    expect(floatPosition(false)(fromNumber(false)(Infinity))).toBe(1)
-    expect(floatPosition(false)(fromNumber(false)(3.4028234663852886e+38))).toBeCloseTo(1, 9)
-    expect(floatPosition(false)(fromNumber(false)(2 ** 64))).toBeCloseTo(0.875, 3)
-    expect(floatPosition(false)(fromNumber(false)(1.5))).toBe(0.75)
-    expect(floatPosition(false)(fromNumber(false)(0))).toBe(0.5)
-    expect(floatPosition(false)(fromNumber(false)(-1.5))).toBe(0.25)
-    expect(floatPosition(false)(fromNumber(false)(-(2 ** 64)))).toBeCloseTo(0.125, 3)
-    expect(floatPosition(false)(fromNumber(false)(-3.4028234663852886e+38))).toBeCloseTo(0, 9)
-    expect(floatPosition(false)(fromNumber(false)(-Infinity))).toBe(0)
-    expect(floatPosition(false)(fromFloatStr(false)('-NaN(8388607)'))).toBeLessThan(0)
+    expect(toPosition(false)(fromFloatStr(false)('NaN(8388607)'))).toBeGreaterThan(1)
+    expect(toPosition(false)(fromNumber(false)(Infinity))).toBe(1)
+    expect(toPosition(false)(fromNumber(false)(3.4028234663852886e+38))).toBeCloseTo(1, 9)
+    expect(toPosition(false)(fromNumber(false)(2 ** 64))).toBeCloseTo(0.875, 3)
+    expect(toPosition(false)(fromNumber(false)(1.5))).toBe(0.75)
+    expect(toPosition(false)(fromNumber(false)(0))).toBe(0.5)
+    expect(toPosition(false)(fromNumber(false)(-1.5))).toBe(0.25)
+    expect(toPosition(false)(fromNumber(false)(-(2 ** 64)))).toBeCloseTo(0.125, 3)
+    expect(toPosition(false)(fromNumber(false)(-3.4028234663852886e+38))).toBeCloseTo(0, 9)
+    expect(toPosition(false)(fromNumber(false)(-Infinity))).toBe(0)
+    expect(toPosition(false)(fromFloatStr(false)('-NaN(8388607)'))).toBeLessThan(0)
     // float64
-    expect(floatPosition(true)(fromFloatStr(true)('NaN(4503599627370495)'))).toBeGreaterThan(1)
-    expect(floatPosition(true)(fromNumber(true)(Infinity))).toBe(1)
-    expect(floatPosition(true)(fromNumber(true)(1.7976931348623157e+308))).toBeCloseTo(1, 14)
-    expect(floatPosition(true)(fromNumber(true)(2 ** 512))).toBeCloseTo(0.875, 3)
-    expect(floatPosition(true)(fromNumber(true)(1.5))).toBe(0.75)
-    expect(floatPosition(true)(fromNumber(true)(0))).toBe(0.5)
-    expect(floatPosition(true)(fromNumber(true)(-1.5))).toBe(0.25)
-    expect(floatPosition(true)(fromNumber(true)(-(2 ** 512)))).toBeCloseTo(0.125, 3)
-    expect(floatPosition(true)(fromNumber(true)(-1.7976931348623157e+308))).toBeCloseTo(0, 14)
-    expect(floatPosition(true)(fromNumber(true)(-Infinity))).toBe(0)
-    expect(floatPosition(true)(fromFloatStr(true)('-NaN(4503599627370495)'))).toBeLessThan(0)
+    expect(toPosition(true)(fromFloatStr(true)('NaN(4503599627370495)'))).toBeGreaterThan(1)
+    expect(toPosition(true)(fromNumber(true)(Infinity))).toBe(1)
+    expect(toPosition(true)(fromNumber(true)(1.7976931348623157e+308))).toBeCloseTo(1, 14)
+    expect(toPosition(true)(fromNumber(true)(2 ** 512))).toBeCloseTo(0.875, 3)
+    expect(toPosition(true)(fromNumber(true)(1.5))).toBe(0.75)
+    expect(toPosition(true)(fromNumber(true)(0))).toBe(0.5)
+    expect(toPosition(true)(fromNumber(true)(-1.5))).toBe(0.25)
+    expect(toPosition(true)(fromNumber(true)(-(2 ** 512)))).toBeCloseTo(0.125, 3)
+    expect(toPosition(true)(fromNumber(true)(-1.7976931348623157e+308))).toBeCloseTo(0, 14)
+    expect(toPosition(true)(fromNumber(true)(-Infinity))).toBe(0)
+    expect(toPosition(true)(fromFloatStr(true)('-NaN(4503599627370495)'))).toBeLessThan(0)
   })
 })
 

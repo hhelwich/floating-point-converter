@@ -171,7 +171,7 @@ export const evalFloatStr = f64 => floatStrOrJs => {
 }
 
 // Returns the normalized position of a float in the list of all floats
-export const floatPosition = f64 => bytes => {
+export const toPosition = f64 => bytes => {
   const p = positive(bytes)
   if (!p) {
     bytes = negate(bytes.slice())
