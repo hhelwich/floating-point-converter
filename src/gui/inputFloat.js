@@ -32,7 +32,11 @@ const setFloatWidth = () => {
 }
 
 const set = onChange(state => {
-  const { fStr, f64 } = state
+  const { f64 } = state
+  let { fStr } = state
+  if (!f64 && evalFloatStr(true)(fStr) === fStr) {
+    fStr = evalFloatStr(false)(fStr)
+  }
   updateApplyFloat(f64)
   setFloatValue(fStr)
   setFloatWidth()
