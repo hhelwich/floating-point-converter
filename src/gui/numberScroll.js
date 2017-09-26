@@ -1,5 +1,5 @@
-import { toFloatStr, fromFloatStr, nextFloat, prevFloat, evalFloatStr, toPosition } from './float'
-import { onChange } from './state'
+import { toFloatStr, fromFloatStr, nextFloat, prevFloat, evalFloatStr, toPosition } from '../float'
+import { onChange } from '../state'
 
 // Get dom elemenst
 const $numberList = document.getElementById('number-list')

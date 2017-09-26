@@ -1,6 +1,6 @@
 
-import { toBitsStr, fromBitsStr, toFloatStr, fromFloatStr, evalFloatStr } from './float'
-import { onChange } from './state'
+import { toBitsStr, fromBitsStr, toFloatStr, fromFloatStr, evalFloatStr } from '../float'
+import { onChange } from '../state'
 import { numberCharWidth, somePxls } from './inputCharWidth'
 
 const $bits = document.getElementById('bits')

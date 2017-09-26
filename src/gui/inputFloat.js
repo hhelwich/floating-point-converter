@@ -1,5 +1,5 @@
-import { evalFloatStr } from './float'
-import { onChange } from './state'
+import { evalFloatStr } from '../float'
+import { onChange } from '../state'
 import { numberCharWidth, somePxls } from './inputCharWidth'
 
 const $float = document.getElementById('float')
@@ -13,6 +13,7 @@ let applyFloat = () => {}
 const updateApplyFloat = f64 => {
   applyFloat = (floatStrOrJs) => {
     const floatStr = evalFloatStr(f64)(floatStrOrJs)
+    setFloatValue(floatStr)
     set({ fStr: floatStr })
   }
 }

@@ -1,3 +1,3 @@
-import { littleEndian } from './float'
+import { littleEndian } from '../float'
 
 document.getElementById('byte-order').innerHTML = `${littleEndian ? 'little' : 'big'} endian`

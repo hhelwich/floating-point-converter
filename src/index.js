@@ -1,6 +1,2 @@
-import './numberScroll'
-import './inputFloat'
-import './inputBits'
-import './inputBitCount'
-import './byteOrder'
+import './gui'
 import './history'
