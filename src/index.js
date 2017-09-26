@@ -16,7 +16,7 @@ const updateChangeBits = (f64) => {
       // Assure correct length and fill with trailing zeros if neccesary
       bitsStr = bitsStr.concat(Array(65).join('0')).slice(0, (f64 ? 8 : 4) * 8)
     }
-    set({ fStr: toFloatStr(f64)(fromBitsStr(bitsStr)) })
+    set1({ fStr: toFloatStr(f64)(fromBitsStr(bitsStr)) })
   }
 }
 
@@ -26,14 +26,14 @@ $byteOrder.innerHTML = `${littleEndian ? 'little' : 'big'} endian`
 
 const setFloatValue = floatStr => { $float.value = floatStr }
 
-const setFloatOrJs = floatStrOrJs => { set({ fStr: floatStrOrJs }) }
+const setFloatOrJs = floatStrOrJs => { set0({ fStr: floatStrOrJs }) }
 
 let applyFloat = () => {}
 
 const updateApplyFloat = f64 => {
   applyFloat = (floatStrOrJs) => {
     const floatStr = evalFloatStr(f64)(floatStrOrJs)
-    set({ fStr: floatStr })
+    set0({ fStr: floatStr })
   }
 }
 
@@ -53,7 +53,7 @@ const numberCharWidth = (() => {
 
 // Add event listeners
 Array.prototype.slice.call($bitCount).forEach((r, i) => {
-  r.addEventListener('change', () => { set({ f64: !!i }) }, false)
+  r.addEventListener('change', () => { set2({ f64: !!i }) }, false)
 })
 $float.addEventListener('input', e => { setFloatOrJs(e.target.value) }, false)
 $float.addEventListener('keydown', e => {
@@ -85,17 +85,25 @@ const setFloatWidth = () => {
 const setBitsWidth = f64 => {
   $bits.style.width = `${Math.round(numberCharWidth * (f64 ? 64 : 32)) + somePxls}px`
 }
-const set = onChange(state => { // On state change
+
+const set0 = onChange(state => {
+  const { fStr, f64 } = state
+  updateApplyFloat(f64)
+  setFloatValue(fStr)
+  setFloatWidth()
+})
+
+const set1 = onChange(state => {
   const { fStr, f64 } = state
   const floatStr = evalFloatStr(f64)(fStr)
   const bytes = fromFloatStr(f64)(floatStr)
   updateChangeBits(f64)
-  updateApplyFloat(f64)
-  setFloatValue(fStr)
   $bits.value = toBitsStr(bytes)
-  $bitCount[+f64].checked = true
-  // Adapt input element sizes and positions
-  setFloatWidth()
   setBitsWidth(f64)
   centerInputs()
+})
+
+const set2 = onChange(state => {
+  const { f64 } = state
+  $bitCount[+f64].checked = true
 })
