@@ -4,6 +4,7 @@
   "description": "Simple IEEE floating point converter website",
   "scripts": {
     "test": "jest",
+    "jest": "jest --watch",
     "build": "webpack",
     "start": "DEV_ENV=true webpack-dev-server --open",
     "lint": "eslint ."
@@ -24,7 +25,7 @@
   "homepage": "https://bitbucket.org/hhelwich/floating-point-converter",
   "devDependencies": {
     "babel-core": "^6.26.0",
-    "babel-jest": "^20.0.3",
+    "babel-jest": "^21.2.0",
     "babel-loader": "^7.1.2",
     "babel-preset-env": "^1.6.0",
     "eslint": "^4.6.1",
@@ -33,7 +34,7 @@
     "eslint-plugin-node": "^5.1.1",
     "eslint-plugin-promise": "^3.5.0",
     "eslint-plugin-standard": "^3.0.1",
-    "jest": "^20.0.4",
+    "jest": "^21.2.0",
     "regenerator-runtime": "^0.11.0",
     "webpack": "^3.5.5",
     "webpack-dev-server": "^2.6.1"
