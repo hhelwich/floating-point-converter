@@ -18,11 +18,6 @@ const updateChangeBits = (f64) => {
 }
 
 $bits.addEventListener('input', e => { changeBits(e.target.value) }, false)
-$bits.addEventListener('keydown', e => {
-  if (e.keyCode === 13) { // On Enter
-    changeBits(e.target.value)
-  }
-}, false)
 
 const setBitsWidth = f64 => {
   $bits.style.width = `${Math.round(numberCharWidth * (f64 ? 64 : 32)) + somePxls}px`
