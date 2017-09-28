@@ -1,5 +1,5 @@
 
-import { toBitsStr, fromBitsStr, toFloatStr, fromFloatStr, evalFloatStr } from '../float'
+import { toBitsStr, fromBitsStr, toFloatStr } from '../float'
 import { onChange } from '../state'
 import { numberCharWidth, somePxls } from './inputCharWidth'
 
@@ -30,10 +30,7 @@ const centerInputs = () => {
   $inputs.style.left = $inputs.style.top = '50%'
 }
 
-const set = onChange(state => {
-  const { fStr, f64 } = state
-  const floatStr = evalFloatStr(f64)(fStr)
-  const bytes = fromFloatStr(f64)(floatStr)
+const set = onChange(({ f64, bytes }) => {
   updateChangeBits(f64)
   $bits.value = toBitsStr(bytes)
   setBitsWidth(f64)

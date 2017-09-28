@@ -1,4 +1,5 @@
 import { onChange, reset } from './state'
+import { fromNumber } from './float'
 
 describe('set', () => {
   beforeEach(reset)
@@ -12,7 +13,7 @@ describe('set', () => {
     // WHEN New state is set
     set({ fStr: '0', f64: false })
     // THEN Change handler has been called with the new state
-    expect(newState).toEqual({ fStr: '0', f64: false })
+    expect(newState).toEqual({ fStr: '0', f64: false, evaled: '0', bytes: fromNumber(false)(0) })
   })
 
   it('only updates given properties', () => {
@@ -24,7 +25,7 @@ describe('set', () => {
     // WHEN Only one property is set
     set({ fStr: '1' })
     // THEN Only the given property is changed
-    expect(newState).toEqual({ fStr: '1', f64: true })
+    expect(newState).toEqual({ fStr: '1', f64: true, evaled: '1', bytes: fromNumber(true)(1) })
   })
 
   it('does not emit change event when properties are not changed', () => {
@@ -55,10 +56,10 @@ describe('set', () => {
     set({ fStr: '1', f64: true })
     // THEN Emit applied states
     expect(states).toEqual([
-      { fStr: '0', f64: true },
-      { fStr: '42', f64: true },
-      { fStr: '42', f64: false },
-      { fStr: '1', f64: true }
+      { fStr: '0', f64: true, evaled: '0', bytes: fromNumber(true)(0) },
+      { fStr: '42', f64: true, evaled: '42', bytes: fromNumber(true)(42) },
+      { fStr: '42', f64: false, evaled: '42', bytes: fromNumber(false)(42) },
+      { fStr: '1', f64: true, evaled: '1', bytes: fromNumber(true)(1) }
     ])
   })
 

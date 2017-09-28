@@ -1,4 +1,4 @@
-import { toFloatStr, fromFloatStr, nextFloat, prevFloat, evalFloatStr, toPosition } from '../float'
+import { toFloatStr, fromFloatStr, nextFloat, prevFloat, toPosition } from '../float'
 import { onChange } from '../state'
 
 // Get dom elemenst
@@ -141,11 +141,8 @@ const updateTotalPosition = (() => {
   }
 })()
 
-const set = onChange(state => { // On state change
+const set = onChange(({ f64, bytes }) => { // On state change
   // Prepare state
-  const { fStr, f64 } = state
-  const floatStr = evalFloatStr(f64)(fStr)
-  const bytes = fromFloatStr(f64)(floatStr)
   const posititon = toPosition(f64)(bytes)
   // Udate closure environments
   updateScrolled(bytes, f64)

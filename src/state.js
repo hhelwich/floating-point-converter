@@ -1,3 +1,5 @@
+import { evalFloatStr, fromFloatStr } from './float'
+
 const props = ['fStr', 'f64']
 
 /**
@@ -20,6 +22,12 @@ export const reset = () => {
   changeHandlers.length = 0
 }
 
+const decorate = ({ fStr, f64 }) => {
+  const evaled = evalFloatStr(f64)(fStr)
+  const bytes = fromFloatStr(f64)(evaled)
+  return { fStr, f64, evaled, bytes }
+}
+
 /**
  * Create a state, register given state change handler and return a state setter.
  */
@@ -31,9 +39,10 @@ export const onChange = changeHandler => {
     const changed = props.map(setProp)
     if (changed.some(b => b)) {
       state = newState
+      const decoratedState = decorate(state)
       changeHandlers.forEach(handler => {
         if (handler !== changeHandler) {
-          handler(state)
+          handler(decoratedState)
         }
       })
     }

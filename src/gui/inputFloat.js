@@ -31,11 +31,9 @@ const setFloatWidth = () => {
   $float.style.width = `${Math.round(numberCharWidth * floatCharWidth) + somePxls}px`
 }
 
-const set = onChange(state => {
-  const { f64 } = state
-  let { fStr } = state
+const set = onChange(({ f64, fStr, evaled }) => {
   if (!f64 && evalFloatStr(true)(fStr) === fStr) {
-    fStr = evalFloatStr(false)(fStr)
+    fStr = evaled
   }
   updateApplyFloat(f64)
   setFloatValue(fStr)

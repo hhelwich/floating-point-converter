@@ -2,8 +2,7 @@ import { onChange } from '../state'
 
 const $bitCount = document.querySelectorAll('input[type=radio]') // Assume 32-bit radio comes first
 
-const set = onChange(state => {
-  const { f64 } = state
+const set = onChange(({ f64 }) => {
   $bitCount[+f64].checked = true
 })
 
