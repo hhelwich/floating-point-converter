@@ -36,7 +36,7 @@ const selectNumber = $number => {
 // Is called when a number in the list is clicked on
 const clickOnNumber = ({ target: $number }) => {
   selectNumber($number)
-  set({ fStr: $number.textContent })
+  setInput($number.textContent)
 }
 
 // Returns a new DOM number element
@@ -141,7 +141,7 @@ const updateTotalPosition = (() => {
   }
 })()
 
-const set = onChange(({ f64, bytes }) => { // On state change
+const { setInput } = onChange(({ f64, bytes }) => { // On state change
   // Prepare state
   const posititon = toPosition(f64)(bytes)
   // Udate closure environments

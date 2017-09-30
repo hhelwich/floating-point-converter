@@ -1,41 +1,25 @@
-import { evalFloatStr } from '../float'
 import { onChange } from '../state'
-import { numberCharWidth, somePxls } from './inputCharWidth'
+import { numberCharWidth } from './inputs'
+import { floatCharWidth, somePxls } from '../config'
 
 const $float = document.getElementById('float')
 
-const setFloatValue = floatStr => { $float.value = floatStr }
+$float.style.width = `${Math.round(numberCharWidth * floatCharWidth + somePxls)}px`
 
-const setFloatOrJs = floatStrOrJs => { set({ fStr: floatStrOrJs }) }
-
-let applyFloat = () => {}
-
-const updateApplyFloat = f64 => {
-  applyFloat = (floatStrOrJs) => {
-    const floatStr = evalFloatStr(f64)(floatStrOrJs)
-    setFloatValue(floatStr)
-    set({ fStr: floatStr })
-  }
+const setInputValue = input => {
+  $float.value = input
 }
 
-$float.addEventListener('input', e => { setFloatOrJs(e.target.value) }, false)
-$float.addEventListener('keydown', e => {
-  if (e.keyCode === 13) { // On Enter
-    applyFloat(e.target.value)
+$float.addEventListener('input', ({ target: { value } }) => {
+  setInput(value)
+}, false)
+
+$float.addEventListener('keydown', ({ keyCode }) => {
+  if (keyCode === 13) { // On Enter
+    evalInput()
   }
 }, false)
 
-const floatCharWidth = 32
-
-const setFloatWidth = () => {
-  $float.style.width = `${Math.round(numberCharWidth * floatCharWidth) + somePxls}px`
-}
-
-const set = onChange(({ f64, fStr, evaled }) => {
-  if (!f64 && evalFloatStr(true)(fStr) === fStr) {
-    fStr = evaled
-  }
-  updateApplyFloat(f64)
-  setFloatValue(fStr)
-  setFloatWidth()
+const { setInput, evalInput } = onChange(({ input }) => {
+  setInputValue(input)
 })

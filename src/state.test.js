@@ -1,80 +1,143 @@
-import { onChange, reset } from './state'
-import { fromNumber } from './float'
+import { onChange, getState, initState, fromUrl, toUrl } from './state'
+import { fromHexStr } from './float'
 
-describe('set', () => {
-  beforeEach(reset)
+describe('getState', () => {
+  beforeEach(initState)
 
-  it('notifies change handler', () => {
-    // GIVEN Initial state
-    let newState
-    const set = onChange(() => {})
-    onChange(state => { newState = state })
-    set({ fStr: '42', f64: true })
-    // WHEN New state is set
-    set({ fStr: '0', f64: false })
-    // THEN Change handler has been called with the new state
-    expect(newState).toEqual({ fStr: '0', f64: false, evaled: '0', bytes: fromNumber(false)(0) })
+  it('returns initial state when called before a state change', () => {
+    // WHEN Get state
+    const state = getState()
+    // THEN Returns initial state
+    expect(state).toEqual({
+      input: '3.141592653589793',
+      float: '3.141592653589793',
+      f64: true,
+      bytes: fromHexStr('400921fb54442d18'),
+      bits: '0100000000001001001000011111101101010100010001000010110100011000'
+    })
   })
 
-  it('only updates given properties', () => {
-    // GIVEN Initial state
-    let newState
-    const set = onChange(() => {})
-    onChange(state => { newState = state })
-    set({ fStr: '0', f64: true })
-    // WHEN Only one property is set
-    set({ fStr: '1' })
-    // THEN Only the given property is changed
-    expect(newState).toEqual({ fStr: '1', f64: true, evaled: '1', bytes: fromNumber(true)(1) })
+  it('returns new state after a state change', () => {
+    // GIVEN State is changed
+    const { setState } = onChange(() => { })
+    setState({ input: '42' })
+    // WHEN Get state
+    const state = getState()
+    // THEN Returns adapted new state
+    expect(state).toEqual({
+      input: '42',
+      float: '42',
+      f64: true,
+      bytes: fromHexStr('4045000000000000'),
+      bits: '0100000001000101000000000000000000000000000000000000000000000000'
+    })
+  })
+})
+
+describe('onChange', () => {
+  beforeEach(initState)
+
+  describe('setInput', () => {
+    it('updates state input property and derived properties', () => {
+      const { setInput } = onChange(() => { })
+      setInput('PI')
+      expect(getState()).toEqual({
+        input: 'PI',
+        f64: true,
+        bytes: fromHexStr('400921fb54442d18'),
+        float: '3.141592653589793',
+        bits: '0100000000001001001000011111101101010100010001000010110100011000'
+      })
+    })
+
+    it('does not notify when state has not changed', () => {
+      // GIVEN Two change listeners
+      let emitted = false
+      const { setInput } = onChange(() => { })
+      onChange(() => { emitted = true })
+      // WHEN Set input to the current value
+      setInput('3.141592653589793')
+      // THEN The change handler is not notified
+      expect(emitted).toBe(false)
+    })
+
+    it('notifies all change handlers but not the source handler', () => {
+      // GIVEN Two change listeners
+      const emitted = []
+      const { setInput: setInputFrom0 } = onChange(({ input }) => { emitted.push([0, input]) })
+      const { setInput: setInputFrom1 } = onChange(({ input }) => { emitted.push([1, input]) })
+      const { setInput: setInputFrom2 } = onChange(({ input }) => { emitted.push([2, input]) })
+      // WHEN Set inputs
+      setInputFrom0('set from 0')
+      setInputFrom2('set from 2')
+      setInputFrom1('set from 1')
+      // THEN The event source is not notified
+      expect(emitted).toEqual([
+        [1, 'set from 0'],
+        [2, 'set from 0'],
+        [0, 'set from 2'],
+        [1, 'set from 2'],
+        [0, 'set from 1'],
+        [2, 'set from 1']
+      ])
+    })
+  })
+})
+
+describe('toUrl', () => {
+  it('encodes state to url', () => {
+    expect(toUrl({ input: '3.14', f64: true })).toBe('3.14')
+    expect(toUrl({ input: '3.14', f64: false })).toBe('~3.14')
+    expect(toUrl({ input: '~3.14', f64: true })).toBe('~~3.14')
+    expect(toUrl({ input: '~3.14', f64: false })).toBe('~~~3.14')
+    expect(toUrl({ input: '~~~3.14', f64: true })).toBe('~~~~~~3.14')
+    expect(toUrl({ input: '~~~3.14', f64: false })).toBe('~~~~~~~3.14')
   })
 
-  it('does not emit change event when properties are not changed', () => {
-    // GIVEN Initial state
-    let changeHandlerCalled
-    const set = onChange(() => {})
-    onChange(() => { changeHandlerCalled = true })
-    set({ fStr: '0', f64: true })
-    changeHandlerCalled = false
-    // WHEN Properties are set with the same value
-    set({ fStr: '0' })
-    set({ f64: true })
-    set({})
-    set({ fStr: '0', f64: true })
-    // THEN Change handler is not called
-    expect(changeHandlerCalled).toBe(false)
+  it('escapes url characters', () => {
+    expect(toUrl({ input: 'PI * 1337 / 100', f64: true })).toBe('PI%20*%201337%20%2F%20100')
+  })
+})
+
+describe('fromUrl', () => {
+  it('decodes state from url', () => {
+    expect(fromUrl('3.14')).toEqual({ input: '3.14', f64: true })
+    expect(fromUrl('~3.14')).toEqual({ input: '3.14', f64: false })
+    expect(fromUrl('~~3.14')).toEqual({ input: '~3.14', f64: true })
+    expect(fromUrl('~~~3.14')).toEqual({ input: '~3.14', f64: false })
+    expect(fromUrl('~~~~3.14')).toEqual({ input: '~~3.14', f64: true })
+    expect(fromUrl('~~~~~3.14')).toEqual({ input: '~~3.14', f64: false })
+    expect(fromUrl('~~~~~~3.14')).toEqual({ input: '~~~3.14', f64: true })
   })
 
-  it('remembers state changes', () => {
-    // GIVEN Initial state
-    const states = []
-    const set = onChange(() => {})
-    onChange(state => states.push(state))
-    set({ fStr: '0', f64: true })
-    // WHEN Apply multiple state changes
-    set({ fStr: '42' })
-    set({ f64: false })
-    set({ fStr: '1', f64: true })
-    // THEN Emit applied states
-    expect(states).toEqual([
-      { fStr: '0', f64: true, evaled: '0', bytes: fromNumber(true)(0) },
-      { fStr: '42', f64: true, evaled: '42', bytes: fromNumber(true)(42) },
-      { fStr: '42', f64: false, evaled: '42', bytes: fromNumber(false)(42) },
-      { fStr: '1', f64: true, evaled: '1', bytes: fromNumber(true)(1) }
-    ])
+  it('decodes escaped url characters', () => {
+    expect(fromUrl('PI%20*%201337%20%2F%20100')).toEqual({ input: 'PI * 1337 / 100', f64: true })
   })
 
-  it('does not notity state emitter', () => {
-    // GIVEN Three state emitters
-    const states = [[], [], []]
-    const set = states.map((_, i) => onChange(state => { states[i].push(state) }))
-    // WHEN Emitting state
-    set[0]({ fStr: '1', f64: true })
-    set[2]({ fStr: '2', f64: true })
-    set[1]({ fStr: '3', f64: true })
-    set[2]({ fStr: '4', f64: true })
-    // THEN State source is not notified
-    expect(states.map(statesi => statesi.map(state => +state.fStr))).toEqual([
-      [2, 3, 4], [1, 2, 4], [1, 3]
-    ])
+  it('return undefined for malformed url encoding', () => {
+    expect(fromUrl('%E0%A4%A')).toBe(undefined)
+  })
+})
+
+describe('fromUrl o toUrl', () => {
+  it('is identity', () => {
+    const testIdentity = input => {
+      expect(fromUrl(toUrl({ input, f64: true }))).toEqual({ input, f64: true })
+      expect(fromUrl(toUrl({ input, f64: false }))).toEqual({ input, f64: false })
+    }
+    testIdentity('')
+    testIdentity('3.14')
+    testIdentity('1')
+    testIdentity('-1')
+    testIdentity('PI * 13.37')
+    testIdentity('~')
+    testIdentity('~~')
+    testIdentity('~~~')
+    testIdentity('~3.14')
+    testIdentity('~~3.14')
+    testIdentity('~~~3.14')
+    testIdentity('PI%20*%201337%20%2F%20100')
+    testIdentity('~PI%20*%201337%20%2F%20100')
+    testIdentity('~~PI%20*%201337%20%2F%20100')
   })
 })

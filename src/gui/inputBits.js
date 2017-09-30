@@ -1,38 +1,29 @@
-
-import { toBitsStr, fromBitsStr, toFloatStr } from '../float'
-import { onChange } from '../state'
-import { numberCharWidth, somePxls } from './inputCharWidth'
+import { onChange, getBits } from '../state'
+import { numberCharWidth, centerInputs } from './inputs'
+import { somePxls } from '../config'
 
 const $bits = document.getElementById('bits')
 
-let changeBits = () => {}
-
-const updateChangeBits = (f64) => {
-  changeBits = bitsStr => {
-    if (bitsStr.length !== (f64 ? 8 : 4) * 8) {
-      // Assure correct length and fill with trailing zeros if neccesary
-      bitsStr = bitsStr.concat(Array(65).join('0')).slice(0, (f64 ? 8 : 4) * 8)
-    }
-    set({ fStr: toFloatStr(f64)(fromBitsStr(bitsStr)) })
-  }
-}
-
-$bits.addEventListener('input', e => { changeBits(e.target.value) }, false)
-
-const setBitsWidth = f64 => {
-  $bits.style.width = `${Math.round(numberCharWidth * (f64 ? 64 : 32)) + somePxls}px`
-}
-
-const centerInputs = () => {
-  const $inputs = document.getElementById('inputs')
-  $inputs.style.marginLeft = `-${Math.round($inputs.offsetWidth / 2)}px`
-  $inputs.style.marginTop = `-${Math.round($inputs.offsetHeight / 2)}px`
-  $inputs.style.left = $inputs.style.top = '50%'
-}
-
-const set = onChange(({ f64, bytes }) => {
-  updateChangeBits(f64)
-  $bits.value = toBitsStr(bytes)
-  setBitsWidth(f64)
+const setBitsWidth = width => {
+  $bits.style.width = `${Math.round(numberCharWidth * width + somePxls)}px`
   centerInputs()
+}
+
+const setBitsValue = value => {
+  setBitsWidth(value.length)
+  $bits.value = value
+}
+
+$bits.addEventListener('input', ({ target: { value } }) => {
+  setBits(value)
+}, false)
+
+$bits.addEventListener('keydown', ({ keyCode, target: { value } }) => {
+  if (keyCode === 13) { // On Enter
+    setBitsValue(getBits())
+  }
+}, false)
+
+const { setBits } = onChange(({ bits }) => {
+  setBitsValue(bits)
 })

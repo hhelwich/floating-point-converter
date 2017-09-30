@@ -12,4 +12,9 @@ export const numberCharWidth = (() => {
   return offsetWidth / numberCount
 })()
 
-export const somePxls = 28
+export const centerInputs = () => {
+  const $inputs = document.getElementById('inputs')
+  $inputs.style.marginLeft = `-${Math.round($inputs.offsetWidth / 2)}px`
+  $inputs.style.marginTop = `-${Math.round($inputs.offsetHeight / 2)}px`
+  $inputs.style.left = $inputs.style.top = '50%'
+}

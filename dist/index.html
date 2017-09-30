@@ -7,11 +7,14 @@
     <link rel="stylesheet" href="style.css">
   </head>
   <body>
+    <div id="number-list"></div>
+    <canvas id="number-total-position"></canvas>
     <div id="inputs">
       <form>
         <div>
           <input id="float" title="Type in a number or JavaScript (Enter to evaluate)" class="number">
         </div>
+
         <div>
           <div class="foo">
             <span class="sign"></span>
@@ -39,14 +42,8 @@
         <div>
           Your system has <span id="byte-order">?</span> byte order.
         </div>
-
       </form>
-
     </div>
-
-    <div id="number-list"></div>
-    <canvas id="number-total-position"></canvas>
-
     <script src="bundle.js"></script>
   </body>
 </html>
