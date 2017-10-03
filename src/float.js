@@ -1,7 +1,7 @@
 
 // Show some info for browsers not supporting typed arrays
 if (typeof Uint16Array === 'undefined') {
-  window.alert('Your browser is too old. Compatible Browsers:\nChrome 7, Firefox 4, IE 10, Edge 12, Safari 5, Opera 11')
+  alert('Your browser is too old. Compatible Browsers:\nChrome 7, Firefox 4, IE 10, Edge 12, Safari 5, Opera 11')
 }
 
 // Endianess of this system (untested…)
@@ -99,6 +99,8 @@ export const fromFloatStr = f64 => floatStr => {
         negate(bytes)
       }
       return bytes
+    } else {
+      return
     }
   }
   return fromNumber(f64)(float)
@@ -152,22 +154,36 @@ const mathClone = () => mathProps.reduce((clone, key) => { clone[key] = mathOrig
 const evalVars = `${Object.getOwnPropertyNames(window).filter(key => key !== 'Math').join(',')},` +
   `${mathProps.map(key => `${key}=Math.${key}`).join(',')}`
 
+// Given string must be parseable
+export const assureFloatStr = f64 => floatStr => toFloatStr(f64)(fromFloatStr(f64)(floatStr))
+
+export const numberStr = f64 => nbr => toFloatStr(f64)(fromNumber(f64)(nbr))
+
+const nan = [false, true].map(f64 => numberStr(f64)(NaN))
+
+export const isNaNStr = f64 => floatStr => floatStr === nan[+f64]
+
+export const evalJsStr = (f64, jsStr) => {
+  try {
+    // Evaluate input
+    Math = mathClone() // eslint-disable-line no-global-assign
+    const nbr = Number(new Function( // eslint-disable-line no-new-func
+      `var ${evalVars};return (${jsStr});`).call(Object.create(null)))
+    Math = mathOrigin // eslint-disable-line no-global-assign
+    return numberStr(f64)(nbr)
+  } catch (_) {
+    Math = mathOrigin // eslint-disable-line no-global-assign
+    return nan[+f64]
+  }
+}
+
 // Takes a float string or a JavaScript expression that evaluates to number and return a float string.
 export const evalFloatStr = f64 => floatStrOrJs => {
-  let floatStr = toFloatStr(f64)(fromFloatStr(f64)(floatStrOrJs))
-  if (floatStr === toFloatStr(f64)(fromNumber(f64)(NaN))) {
-    try { // Default NaN?
-      // Evaluate input
-      Math = mathClone() // eslint-disable-line no-global-assign
-      const nbr = Number(new Function( // eslint-disable-line no-new-func
-        `var ${evalVars};return (${floatStrOrJs});`).call(Object.create(null)))
-      Math = mathOrigin // eslint-disable-line no-global-assign
-      floatStr = toFloatStr(f64)(fromNumber(f64)(nbr))
-    } catch (_) {
-      Math = mathOrigin // eslint-disable-line no-global-assign
-    }
+  const bytes = fromFloatStr(f64)(floatStrOrJs)
+  if (!bytes) { // Cannot parse string as number
+    return evalJsStr(f64, floatStrOrJs)
   }
-  return floatStr
+  return toFloatStr(f64)(bytes)
 }
 
 // Returns the normalized position of a float in the list of all floats

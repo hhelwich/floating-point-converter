@@ -24,6 +24,6 @@ $bits.addEventListener('keydown', ({ keyCode, target: { value } }) => {
   }
 }, false)
 
-const { setBits } = onChange(({ bits }) => {
-  setBitsValue(bits)
+const { setBits } = onChange(() => {
+  setBitsValue(getBits())
 })

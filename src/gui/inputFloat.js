@@ -1,4 +1,4 @@
-import { onChange } from '../state'
+import { onChange, getInput, evalInput } from '../state'
 import { numberCharWidth } from './inputs'
 import { floatCharWidth, somePxls } from '../config'
 
@@ -20,6 +20,6 @@ $float.addEventListener('keydown', ({ keyCode }) => {
   }
 }, false)
 
-const { setInput, evalInput } = onChange(({ input }) => {
-  setInputValue(input)
+const { setInput } = onChange(() => {
+  setInputValue(getInput())
 })

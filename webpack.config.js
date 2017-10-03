@@ -1,5 +1,6 @@
 const path = require('path')
 const webpack = require('webpack')
+const domprops = require('uglify-js/tools/domprops')
 
 const DEV = process.env.DEV_ENV === 'true'
 
@@ -25,7 +26,11 @@ module.exports = {
   },
   plugins: DEV ? [] : [
     new webpack.optimize.UglifyJsPlugin({
-      compress: { warnings: false }
+      mangle: {
+        props: {
+          reserved: domprops.props
+        }
+      }
     })
   ]
 }

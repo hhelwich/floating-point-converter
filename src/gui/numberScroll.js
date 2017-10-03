@@ -1,5 +1,5 @@
 import { toFloatStr, fromFloatStr, nextFloat, prevFloat, toPosition } from '../float'
-import { onChange } from '../state'
+import { onChange, getF64, getBytes } from '../state'
 
 // Get dom elemenst
 const $numberList = document.getElementById('number-list')
@@ -48,7 +48,7 @@ const createNumberElement = (floatStr, selected) => {
   return div
 }
 
-const getScrollY = () => window.pageYOffset
+const getScrollY = () => pageYOffset
 
 const scrolled = (up, bytes, f64) => () => {
   const scrollY = getScrollY()
@@ -75,7 +75,7 @@ const scrolled = (up, bytes, f64) => () => {
   }
   const scrollDiff = getScrollY() - scrollY
   const scroll = heightDiff + scrollDiff
-  window.scrollBy(0, up ? scroll : -scroll)
+  scrollBy(0, up ? scroll : -scroll)
 }
 
 let scrolledUp = () => {}
@@ -99,11 +99,11 @@ updateCanvasSize()
 // Update number list. Is called on state change.
 const updateNumbers = (f64, bytes) => {
   // Assure there are enough number elments
-  while ($numberList.clientHeight < window.innerHeight * 2) {
+  while ($numberList.clientHeight < innerHeight * 2) {
     $numberList.appendChild(createNumberElement('0'))
   }
   // Set content
-  window.scrollTo(0, Math.floor((numberListHeight() - window.innerHeight) / 2)) // Scroll to center of numbers
+  scrollTo(0, Math.floor((numberListHeight() - innerHeight) / 2)) // Scroll to center of numbers
   const $numbers = $numberList.childNodes
   const centerIdx = Math.floor($numbers.length / 2)
   const fStr = toFloatStr(f64)(bytes)
@@ -141,7 +141,9 @@ const updateTotalPosition = (() => {
   }
 })()
 
-const { setInput } = onChange(({ f64, bytes }) => { // On state change
+const { setInput } = onChange(() => { // On state change
+  const f64 = getF64()
+  const bytes = getBytes()
   // Prepare state
   const posititon = toPosition(f64)(bytes)
   // Udate closure environments
@@ -152,12 +154,12 @@ const { setInput } = onChange(({ f64, bytes }) => { // On state change
   updateTotalPosition(f64, bytes, posititon)
 })
 
-window.addEventListener('resize', () => resizedWindow(), false)
+addEventListener('resize', () => resizedWindow(), false)
 
-window.addEventListener('scroll', () => {
+addEventListener('scroll', () => {
   if (getScrollY() <= 0) { // Scrolled up
     scrolledUp()
-  } else if (getScrollY() + window.innerHeight >= numberListHeight()) { // Scrolled down
+  } else if (getScrollY() + innerHeight >= numberListHeight()) { // Scrolled down
     scrolledDown()
   }
 }, false)

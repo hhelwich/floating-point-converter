@@ -39,5 +39,5 @@
     "webpack": "^3.5.5",
     "webpack-dev-server": "^2.6.1"
   },
-  "eslintIgnore": ["dist/bundle.js"]
+  "eslintIgnore": ["dist/*.js"]
 }

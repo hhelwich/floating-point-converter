@@ -242,13 +242,16 @@ describe('fromFloatStr', () => {
     // Payload overflow
     expect(toHexStr(fromFloatStr(true)('NaN(4503599627370496)'))).toBe('7ff8000000000000')
     expect(toHexStr(fromFloatStr(false)('NaN(8388608)'))).toBe('7fc00000')
-
-    expect(toHexStr(fromFloatStr(true)('NaN(-42)'))).toBe('7ff8000000000000')
-    expect(toHexStr(fromFloatStr(false)('NaN(-42)'))).toBe('7fc00000')
+    // Payload should be greater than 0
     expect(toHexStr(fromFloatStr(true)('NaN(0)'))).toBe('7ff8000000000000')
     expect(toHexStr(fromFloatStr(false)('NaN(0)'))).toBe('7fc00000')
-    expect(toHexStr(fromFloatStr(true)('foo'))).toBe('7ff8000000000000')
-    expect(toHexStr(fromFloatStr(false)('foo'))).toBe('7fc00000')
+  })
+
+  it('maps everything else to undefined', () => {
+    expect(fromFloatStr(true)('NaN(-42)')).toBe(undefined)
+    expect(fromFloatStr(false)('NaN(-42)')).toBe(undefined)
+    expect(fromFloatStr(true)('foo')).toBe(undefined)
+    expect(fromFloatStr(false)('foo')).toBe(undefined)
   })
 
   it('rounds to next float32 if needed', () => {
