@@ -1,5 +1,7 @@
+import { somePxls } from '../config'
+
 // Width of a single number character
-export const numberCharWidth = (() => {
+const numberCharWidth = (() => {
   const { body } = document
   const div = document.createElement('div')
   const numberCount = 128
@@ -11,6 +13,8 @@ export const numberCharWidth = (() => {
   body.removeChild(div)
   return offsetWidth / numberCount
 })()
+
+export const inputWidth = charCount => `${Math.round(numberCharWidth * charCount + somePxls)}px`
 
 export const centerInputs = () => {
   const $inputs = document.getElementById('inputs')

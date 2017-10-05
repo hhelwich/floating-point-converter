@@ -1,10 +1,10 @@
 import { onChange, getInput, evalInput } from '../state'
-import { numberCharWidth } from './inputs'
-import { floatCharWidth, somePxls } from '../config'
+import { inputWidth } from './inputs'
+import { floatCharWidth } from '../config'
 
 const $float = document.getElementById('float')
 
-$float.style.width = `${Math.round(numberCharWidth * floatCharWidth + somePxls)}px`
+$float.style.width = inputWidth(floatCharWidth)
 
 const setInputValue = input => {
   $float.value = input

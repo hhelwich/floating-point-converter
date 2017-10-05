@@ -7,6 +7,6 @@ const { setF64 } = onChange(() => {
 })
 
 // Add event listeners
-Array.prototype.slice.call($bitCount).forEach((r, i) => {
-  r.addEventListener('change', () => { setF64(!!i) }, false)
+;[0, 1].forEach(i => {
+  $bitCount[i].addEventListener('change', () => { setF64(!!i) }, false)
 })
