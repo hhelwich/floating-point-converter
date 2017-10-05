@@ -1,7 +1,5 @@
 import { onChange, getState, getUrl } from './state'
 
-const { history } = window
-
 let historyPushType = 'replaceState'
 
 const { setState, setFromUrl } = onChange(() => {
@@ -15,7 +13,7 @@ addEventListener('popstate', ({ state }) => {
   }
 }, false)
 
-const { location: { hash } } = window
+const { hash } = location
 if (hash.length > 0) {
   setFromUrl(hash.substr(1))
 }
