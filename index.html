@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>IEEE Floating Point Converter</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+    <div id="number-list"></div>
+    <canvas id="number-total-position"></canvas>
+    <div id="inputs">
+      <form>
+        <div>
+          <input id="float" title="Type in a number or JavaScript (Enter to evaluate)" class="number">
+        </div>
+
+        <div>
+          <div class="foo">
+            <span class="sign"></span>
+            <span class="exponent"></span>
+            <span class="mantissa"></span>
+          </div>
+          <div>
+            <input id="bits" class="number">
+          </div>
+        </div>
+
+        <fieldset>
+          <div>
+            <label>
+              <input type="radio" name="fBits">
+              32-bit
+            </label>
+            <label>
+              <input type="radio" name="fBits">
+              64-bit
+            </label>
+          </div>
+        </fieldset>
+
+        <div>
+          Your system has <span id="byte-order">?</span> byte order.
+        </div>
+      </form>
+    </div>
+    <script src="bundle.js"></script>
+  </body>
+</html>

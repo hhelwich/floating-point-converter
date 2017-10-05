@@ -1,0 +1,66 @@
+/* reset rules */
+
+*,
+*:before,
+*:after {
+  box-sizing: border-box;
+}
+
+fieldset {
+  border: 0;
+}
+
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 1rem;
+}
+
+/* Layouting and styling */
+
+#inputs {
+  position: fixed;
+  text-align: center;
+}
+
+input:not([type]) {
+  padding: .5rem .75rem;
+  border: 1px solid rgba(0, 0, 0, 0.5);
+  border-radius: .25rem;
+}
+
+#byte-order {
+  font-weight: bold;
+}
+
+#number-list {
+  position: absolute;
+  width: auto;
+  right: 50px;
+}
+
+#number-total-position {
+  position: fixed;
+  width: 50px;
+  height: 100%;
+  right: 0;
+  top: 0;
+}
+
+.number {
+  font-size: 1rem;
+  font-family: Courier New, Courier, monospace;
+}
+
+div.number {
+  padding: 5px;
+  cursor: pointer;
+}
+
+div.number:hover {
+  background-color: lightblue;
+}
+
+div.number.selected {
+  background-color: blue;
+  color: white;
+}
