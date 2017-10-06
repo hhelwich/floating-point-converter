@@ -64,3 +64,10 @@ div.number.selected {
   background-color: blue;
   color: white;
 }
+
+.github-corner {
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  height: 80px;
+}
