@@ -64,3 +64,23 @@ div.number.selected {
   background-color: blue;
   color: white;
 }
+
+.github-corner {
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  height: 80px;
+}
+
+.github-corner-overlay {
+  position: fixed;
+  width: 114px;
+  height: 57px;
+  bottom: 31.7px;
+  left: 3.2px;
+  transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
+  -webkit-transform: rotate(45deg);
+  -o-transform: rotate(45deg);
+  -moz-transform: rotate(45deg);
+}
