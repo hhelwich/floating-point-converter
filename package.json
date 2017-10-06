@@ -11,7 +11,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@bitbucket.org/hhelwich/floating-point-converter.git"
+    "url": "git+ssh://git@github.com:hhelwich/floating-point-converter.git"
   },
   "keywords": [
     "IEEE",
@@ -22,7 +22,7 @@
   ],
   "author": "Hendrik Helwich",
   "license": "MIT",
-  "homepage": "https://bitbucket.org/hhelwich/floating-point-converter",
+  "homepage": "https://github.com/hhelwich/floating-point-converter",
   "devDependencies": {
     "babel-core": "^6.26.0",
     "babel-jest": "^21.2.0",
